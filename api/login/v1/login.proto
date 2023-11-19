@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package layout.login.v1;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/go-lynx/lynx-layout/api/login/v1;v1";
+option java_multiple_files = true;
+option java_package = "github.com.go-lynx.lynx-layout.api.login.v1";
+option java_outer_classname = "LoginProtoV1";
+
+
+service Login {
+
+  rpc Login (LoginRequest) returns (LoginReply) {
+    option (google.api.http) = {
+      post: "/login"
+      body: "*"
+    };
+  }
+
+}
+
+message LoginRequest {
+  string account = 1
+  [
+    (validate.rules).string = {
+      min_len : 5,
+      max_len : 32
+    }
+  ];
+  string password = 2
+  [
+    (validate.rules).string = {
+      min_len : 8,
+      max_len : 32
+    }
+  ];
+}
+
+message LoginReply {
+
+  string token = 1;
+  UserInfo user = 2;
+
+}
+
+message UserInfo{
+
+  string num = 1;
+  string account = 2;
+  string nickName = 3;
+  string avatar = 4;
+
+}

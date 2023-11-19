@@ -1,0 +1,18 @@
+global:
+  serverConnector:
+    protocol: grpc
+    addresses:
+      - 127.0.0.1:8091
+  statReporter:
+    enable: true
+    chain:
+      - prometheus
+    plugin:
+      prometheus:
+        type: push
+        address: 127.0.0.1:9091
+        pushInterval: 5s
+config:
+  configConnector:
+    addresses:
+      - 127.0.0.1:8093
