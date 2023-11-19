@@ -1,0 +1,9 @@
+server:
+  name: server-name
+  version: v1.0.0
+  polaris:
+    namespace: namespace
+    token: polaris-token
+    weight: 100
+    ttl: 5
+    timeout: 1s

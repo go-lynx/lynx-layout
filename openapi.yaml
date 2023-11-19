@@ -1,0 +1,55 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Login API
+    version: 0.0.1
+paths:
+    /login:
+        post:
+            tags:
+                - Login
+            operationId: Login_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/layout.login.v1.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/layout.login.v1.LoginReply'
+components:
+    schemas:
+        layout.login.v1.LoginReply:
+            type: object
+            properties:
+                token:
+                    type: string
+                user:
+                    $ref: '#/components/schemas/layout.login.v1.UserInfo'
+        layout.login.v1.LoginRequest:
+            type: object
+            properties:
+                account:
+                    type: string
+                password:
+                    type: string
+        layout.login.v1.UserInfo:
+            type: object
+            properties:
+                num:
+                    type: string
+                account:
+                    type: string
+                nickName:
+                    type: string
+                avatar:
+                    type: string
+tags:
+    - name: Login

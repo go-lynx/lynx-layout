@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package layout.login.v1;
+
+import "errors/errors.proto";
+
+option go_package = "github.com/go-lynx/lynx-layout/api/login/v1;v1";
+option java_multiple_files = true;
+option java_package = "github.com.go-lynx.lynx-layout.api.login.v1";
+option java_outer_classname = "LoginProtoV1";
+
+enum ErrorReason {
+  USER_DOES_NOT_EXIST = 0 [(errors.code) = 404];
+  INCORRECT_PASSWORD = 1 [(errors.code) = 405];
+  ACCOUNT_HAS_BEEN_BANNED = 2 [(errors.code) = 406];
+  LOGIN_ERROR = 3 [(errors.code) = 407];
+}
