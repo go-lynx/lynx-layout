@@ -14,7 +14,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-lynx/lynx-layout/internal/data/ent/banrecord"
 	"github.com/go-lynx/lynx-layout/internal/data/ent/user"
 )
 
@@ -23,8 +22,6 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// BanRecord is the client for interacting with the BanRecord builders.
-	BanRecord *BanRecordClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 }
@@ -40,7 +37,6 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.BanRecord = NewBanRecordClient(c.config)
 	c.User = NewUserClient(c.config)
 }
 
@@ -125,10 +121,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:       ctx,
-		config:    cfg,
-		BanRecord: NewBanRecordClient(cfg),
-		User:      NewUserClient(cfg),
+		ctx:    ctx,
+		config: cfg,
+		User:   NewUserClient(cfg),
 	}, nil
 }
 
@@ -146,17 +141,16 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:       ctx,
-		config:    cfg,
-		BanRecord: NewBanRecordClient(cfg),
-		User:      NewUserClient(cfg),
+		ctx:    ctx,
+		config: cfg,
+		User:   NewUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		BanRecord.
+//		User.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -178,159 +172,22 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.BanRecord.Use(hooks...)
 	c.User.Use(hooks...)
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.BanRecord.Intercept(interceptors...)
 	c.User.Intercept(interceptors...)
 }
 
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
-	case *BanRecordMutation:
-		return c.BanRecord.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
-	}
-}
-
-// BanRecordClient is a client for the BanRecord schema.
-type BanRecordClient struct {
-	config
-}
-
-// NewBanRecordClient returns a client for the BanRecord from the given config.
-func NewBanRecordClient(c config) *BanRecordClient {
-	return &BanRecordClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `banrecord.Hooks(f(g(h())))`.
-func (c *BanRecordClient) Use(hooks ...Hook) {
-	c.hooks.BanRecord = append(c.hooks.BanRecord, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `banrecord.Intercept(f(g(h())))`.
-func (c *BanRecordClient) Intercept(interceptors ...Interceptor) {
-	c.inters.BanRecord = append(c.inters.BanRecord, interceptors...)
-}
-
-// Create returns a builder for creating a BanRecord entity.
-func (c *BanRecordClient) Create() *BanRecordCreate {
-	mutation := newBanRecordMutation(c.config, OpCreate)
-	return &BanRecordCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of BanRecord entities.
-func (c *BanRecordClient) CreateBulk(builders ...*BanRecordCreate) *BanRecordCreateBulk {
-	return &BanRecordCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *BanRecordClient) MapCreateBulk(slice any, setFunc func(*BanRecordCreate, int)) *BanRecordCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &BanRecordCreateBulk{err: fmt.Errorf("calling to BanRecordClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*BanRecordCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &BanRecordCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for BanRecord.
-func (c *BanRecordClient) Update() *BanRecordUpdate {
-	mutation := newBanRecordMutation(c.config, OpUpdate)
-	return &BanRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *BanRecordClient) UpdateOne(br *BanRecord) *BanRecordUpdateOne {
-	mutation := newBanRecordMutation(c.config, OpUpdateOne, withBanRecord(br))
-	return &BanRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *BanRecordClient) UpdateOneID(id int64) *BanRecordUpdateOne {
-	mutation := newBanRecordMutation(c.config, OpUpdateOne, withBanRecordID(id))
-	return &BanRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for BanRecord.
-func (c *BanRecordClient) Delete() *BanRecordDelete {
-	mutation := newBanRecordMutation(c.config, OpDelete)
-	return &BanRecordDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *BanRecordClient) DeleteOne(br *BanRecord) *BanRecordDeleteOne {
-	return c.DeleteOneID(br.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *BanRecordClient) DeleteOneID(id int64) *BanRecordDeleteOne {
-	builder := c.Delete().Where(banrecord.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &BanRecordDeleteOne{builder}
-}
-
-// Query returns a query builder for BanRecord.
-func (c *BanRecordClient) Query() *BanRecordQuery {
-	return &BanRecordQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeBanRecord},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a BanRecord entity by its id.
-func (c *BanRecordClient) Get(ctx context.Context, id int64) (*BanRecord, error) {
-	return c.Query().Where(banrecord.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *BanRecordClient) GetX(ctx context.Context, id int64) *BanRecord {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *BanRecordClient) Hooks() []Hook {
-	return c.hooks.BanRecord
-}
-
-// Interceptors returns the client interceptors.
-func (c *BanRecordClient) Interceptors() []Interceptor {
-	return c.inters.BanRecord
-}
-
-func (c *BanRecordClient) mutate(ctx context.Context, m *BanRecordMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&BanRecordCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&BanRecordUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&BanRecordUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&BanRecordDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown BanRecord mutation op: %q", m.Op())
 	}
 }
 
@@ -470,9 +327,9 @@ func (c *UserClient) mutate(ctx context.Context, m *UserMutation) (Value, error)
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		BanRecord, User []ent.Hook
+		User []ent.Hook
 	}
 	inters struct {
-		BanRecord, User []ent.Interceptor
+		User []ent.Interceptor
 	}
 )
