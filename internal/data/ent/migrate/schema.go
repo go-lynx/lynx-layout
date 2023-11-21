@@ -9,24 +9,6 @@ import (
 )
 
 var (
-	// BanRecordsColumns holds the columns for the "ban_records" table.
-	BanRecordsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "主键ID"},
-		{Name: "user_id", Type: field.TypeInt64, Comment: "用户ID"},
-		{Name: "ban_code", Type: field.TypeString, Size: 120, Comment: "封禁类型", Default: ""},
-		{Name: "ban_note", Type: field.TypeString, Size: 240, Comment: "封禁原因", Default: ""},
-		{Name: "release_at", Type: field.TypeTime, Comment: "解封时间", SchemaType: map[string]string{"mysql": "datetime(3)"}},
-		{Name: "release_note", Type: field.TypeString, Size: 240, Comment: "解封原因", Default: ""},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间", SchemaType: map[string]string{"mysql": "datetime(3)"}},
-		{Name: "updated_at", Type: field.TypeTime, Comment: "修改时间", SchemaType: map[string]string{"mysql": "datetime(3)"}},
-	}
-	// BanRecordsTable holds the schema information for the "ban_records" table.
-	BanRecordsTable = &schema.Table{
-		Name:       "ban_records",
-		Comment:    "用户封禁记录表",
-		Columns:    BanRecordsColumns,
-		PrimaryKey: []*schema.Column{BanRecordsColumns[0]},
-	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true, Comment: "主键ID"},
@@ -52,12 +34,10 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		BanRecordsTable,
 		UsersTable,
 	}
 )
 
 func init() {
-	BanRecordsTable.Annotation = &entsql.Annotation{}
 	UsersTable.Annotation = &entsql.Annotation{}
 }

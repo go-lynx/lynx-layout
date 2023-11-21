@@ -12,7 +12,6 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"github.com/go-lynx/lynx-layout/internal/data/ent/banrecord"
 	"github.com/go-lynx/lynx-layout/internal/data/ent/user"
 )
 
@@ -74,8 +73,7 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			banrecord.Table: banrecord.ValidColumn,
-			user.Table:      user.ValidColumn,
+			user.Table: user.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

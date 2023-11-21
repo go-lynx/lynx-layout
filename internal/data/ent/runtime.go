@@ -5,7 +5,6 @@ package ent
 import (
 	"time"
 
-	"github.com/go-lynx/lynx-layout/internal/data/ent/banrecord"
 	"github.com/go-lynx/lynx-layout/internal/data/ent/schema"
 	"github.com/go-lynx/lynx-layout/internal/data/ent/user"
 )
@@ -14,38 +13,6 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	banrecordFields := schema.BanRecord{}.Fields()
-	_ = banrecordFields
-	// banrecordDescBanCode is the schema descriptor for ban_code field.
-	banrecordDescBanCode := banrecordFields[2].Descriptor()
-	// banrecord.DefaultBanCode holds the default value on creation for the ban_code field.
-	banrecord.DefaultBanCode = banrecordDescBanCode.Default.(string)
-	// banrecord.BanCodeValidator is a validator for the "ban_code" field. It is called by the builders before save.
-	banrecord.BanCodeValidator = banrecordDescBanCode.Validators[0].(func(string) error)
-	// banrecordDescBanNote is the schema descriptor for ban_note field.
-	banrecordDescBanNote := banrecordFields[3].Descriptor()
-	// banrecord.DefaultBanNote holds the default value on creation for the ban_note field.
-	banrecord.DefaultBanNote = banrecordDescBanNote.Default.(string)
-	// banrecord.BanNoteValidator is a validator for the "ban_note" field. It is called by the builders before save.
-	banrecord.BanNoteValidator = banrecordDescBanNote.Validators[0].(func(string) error)
-	// banrecordDescReleaseNote is the schema descriptor for release_note field.
-	banrecordDescReleaseNote := banrecordFields[5].Descriptor()
-	// banrecord.DefaultReleaseNote holds the default value on creation for the release_note field.
-	banrecord.DefaultReleaseNote = banrecordDescReleaseNote.Default.(string)
-	// banrecord.ReleaseNoteValidator is a validator for the "release_note" field. It is called by the builders before save.
-	banrecord.ReleaseNoteValidator = banrecordDescReleaseNote.Validators[0].(func(string) error)
-	// banrecordDescCreatedAt is the schema descriptor for created_at field.
-	banrecordDescCreatedAt := banrecordFields[6].Descriptor()
-	// banrecord.DefaultCreatedAt holds the default value on creation for the created_at field.
-	banrecord.DefaultCreatedAt = banrecordDescCreatedAt.Default.(func() time.Time)
-	// banrecordDescUpdatedAt is the schema descriptor for updated_at field.
-	banrecordDescUpdatedAt := banrecordFields[7].Descriptor()
-	// banrecord.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	banrecord.DefaultUpdatedAt = banrecordDescUpdatedAt.Default.(func() time.Time)
-	// banrecordDescID is the schema descriptor for id field.
-	banrecordDescID := banrecordFields[0].Descriptor()
-	// banrecord.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	banrecord.IDValidator = banrecordDescID.Validators[0].(func(int64) error)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescNum is the schema descriptor for num field.
