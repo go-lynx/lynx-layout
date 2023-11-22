@@ -46,7 +46,7 @@ go install github.com/go-lynx/lynx/cmd/lynx@latest
 ```
 
 ```shell
-go new demo1 demo2 demo3
+lynx new demo1 demo2 demo3
 ```
 
 ## Quick Start Code
