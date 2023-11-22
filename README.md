@@ -37,9 +37,22 @@ Here's a tree-like representation of the project structure:
    ┗🖥️ Service configuration for API interfaces
 ```
 
+## Quick Install
+
+> If you want to use this microservice code template, all you need to do is execute the following command to install the Lynx CLI command-line tool, and then run the new command to automatically initialize a runnable project (the new command can support multiple project names).
+
+```shell
+  go install github.com/go-lynx/lynx/cmd/lynx@latest
+```
+
+```shell
+  go new demo1 demo2 demo3
+```
+
+
 ## Quick Start Code
 
-To get your microservice up and running in no time, use the following code:
+To get your microservice up and running in no time, use the following code (Some functionalities can be plugged in or out based on your choice.):
 
 ```go
 func main() {
