@@ -4,8 +4,8 @@ import (
 	"context"
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
-	"github.com/go-lynx/lynx/plugin/mysql"
-	br "github.com/go-lynx/lynx/plugin/redis"
+	"github.com/go-lynx/lynx/plugin/db"
+	lynxRedis "github.com/go-lynx/lynx/plugin/redis"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/redis/go-redis/v9"
 
@@ -16,8 +16,8 @@ import (
 var ProviderSet = wire.NewSet(
 	NewData,
 	NewLoginRepo,
-	mysql.GetDB,
-	br.GetRedis)
+	db.GetDriver,
+	lynxRedis.GetRedis)
 
 type Data struct {
 	db  *ent.Client

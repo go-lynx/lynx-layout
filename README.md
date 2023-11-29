@@ -55,15 +55,7 @@ To get your microservice up and running in no time, use the following code (Some
 
 ```go
 func main() {
-    boot.NewApp(
-    wireApp,
-    http.Http(),
-    grpc.Grpc(grpc.EnableTls()),
-    mysql.Mysql(),
-    redis.Redis(),
-    tracer.Tracer(),
-    token.Token(login.NewLogin()),
-    ).Run()
+    boot.LynxApplication(wireApp).Run()
 }
 ```
 
