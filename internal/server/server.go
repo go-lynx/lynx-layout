@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/go-lynx/lynx/boot"
+	"github.com/go-lynx/lynx/app"
 	"github.com/google/wire"
 )
 
@@ -9,6 +9,6 @@ import (
 var ProviderSet = wire.NewSet(
 	NewGRPCServer,
 	NewHTTPServer,
-	boot.NewServiceRegistry,
-	boot.NewServiceDiscovery,
+	app.ServiceRegistry,
+	app.ServiceDiscovery,
 )

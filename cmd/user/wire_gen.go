@@ -13,9 +13,10 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/data"
 	"github.com/go-lynx/lynx-layout/internal/server"
 	"github.com/go-lynx/lynx-layout/internal/service"
-	"github.com/go-lynx/lynx/boot"
+	"github.com/go-lynx/lynx/app"
 	"github.com/go-lynx/lynx/conf"
-	"github.com/go-lynx/lynx/plugin/mysql"
+	"github.com/go-lynx/lynx/plugin/db"
+	kratos2 "github.com/go-lynx/lynx/plugin/kratos"
 	"github.com/go-lynx/lynx/plugin/redis"
 )
 
@@ -26,8 +27,8 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, error) {
-	driver := mysql.GetDB()
+func wireApp(lynx *conf.Lynx, logger log.Logger) (*kratos.App, error) {
+	driver := db.GetDriver()
 	client := redis.GetRedis()
 	dataData, err := data.NewData(driver, client, logger)
 	if err != nil {
@@ -38,7 +39,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, error) 
 	loginService := service.NewLoginService(loginUseCase)
 	grpcServer := server.NewGRPCServer(loginService)
 	httpServer := server.NewHTTPServer(loginService)
-	registrar := boot.NewServiceRegistry(bootstrap)
-	app := boot.NewKratos(logger, grpcServer, httpServer, registrar)
-	return app, nil
+	registrar := app.ServiceRegistry()
+	kratosApp := kratos2.NewKratos(logger, grpcServer, httpServer, registrar)
+	return kratosApp, nil
 }

@@ -6,5 +6,5 @@ import (
 )
 
 func main() {
-	boot.NewApp(wireApp).Run()
+	boot.LynxApplication(wireApp).Run()
 }
