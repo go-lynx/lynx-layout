@@ -27,7 +27,7 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(lynx *conf.Lynx, logger log.Logger) (*kratos.App, error) {
+func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, error) {
 	driver := db.GetDriver()
 	client := redis.GetRedis()
 	dataData, err := data.NewData(driver, client, logger)
