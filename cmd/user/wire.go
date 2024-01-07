@@ -12,13 +12,12 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/data"
 	"github.com/go-lynx/lynx-layout/internal/server"
 	"github.com/go-lynx/lynx-layout/internal/service"
-	"github.com/go-lynx/lynx/conf"
 	lynx "github.com/go-lynx/lynx/plugin/kratos"
 	"github.com/google/wire"
 )
 
 // wireApp init kratos application.
-func wireApp(*conf.Bootstrap, log.Logger) (*kratos.App, error) {
+func wireApp(log.Logger) (*kratos.App, error) {
 	panic(
 		wire.Build(
 			server.ProviderSet,

@@ -5,7 +5,7 @@ go 1.20
 require (
 	entgo.io/ent v0.12.5
 	github.com/go-kratos/kratos/v2 v2.7.2
-	github.com/go-lynx/lynx v0.1.3-beta
+	github.com/go-lynx/lynx v0.0.0-00010101000000-000000000000
 	github.com/go-lynx/lynx-layout/api v0.0.0-00010101000000-000000000000
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/google/wire v0.5.0
@@ -69,5 +69,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/go-lynx/lynx => ../lynx
 
 replace github.com/go-lynx/lynx-layout/api => ./api

@@ -14,7 +14,6 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/server"
 	"github.com/go-lynx/lynx-layout/internal/service"
 	"github.com/go-lynx/lynx/app"
-	"github.com/go-lynx/lynx/conf"
 	"github.com/go-lynx/lynx/plugin/db"
 	kratos2 "github.com/go-lynx/lynx/plugin/kratos"
 	"github.com/go-lynx/lynx/plugin/redis"
@@ -27,7 +26,7 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, error) {
+func wireApp(logger log.Logger) (*kratos.App, error) {
 	driver := db.GetDriver()
 	client := redis.GetRedis()
 	dataData, err := data.NewData(driver, client, logger)
