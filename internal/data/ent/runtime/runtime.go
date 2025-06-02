@@ -5,6 +5,6 @@ package runtime
 // The schema-stitching logic is generated in github.com/go-lynx/lynx-layout/internal/data/ent/runtime.go
 
 const (
-	Version = "v0.12.4"                                         // Version of ent codegen.
-	Sum     = "h1:LddPnAyxls/O7DTXZvUGDj0NZIdGSu317+aoNLJWbD8=" // Sum of ent codegen.
+	Version = "v0.14.4"                                         // Version of ent codegen.
+	Sum     = "h1:/DhDraSLXIkBhyiVoJeSshr4ZYi7femzhj6/TckzZuI=" // Sum of ent codegen.
 )

@@ -14,9 +14,9 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/server"
 	"github.com/go-lynx/lynx-layout/internal/service"
 	"github.com/go-lynx/lynx/app"
-	"github.com/go-lynx/lynx/plugin/db"
-	kratos2 "github.com/go-lynx/lynx/plugin/kratos"
-	"github.com/go-lynx/lynx/plugin/redis"
+	kratos2 "github.com/go-lynx/lynx/app/kratos"
+	db "github.com/go-lynx/plugins/db/mysql/v2"
+	"github.com/go-lynx/plugins/db/redis/v2"
 )
 
 import (
@@ -29,16 +29,17 @@ import (
 func wireApp(logger log.Logger) (*kratos.App, error) {
 	driver := db.GetDriver()
 	client := redis.GetRedis()
-	dataData, err := data.NewData(driver, client, logger)
+	dataData, err := data.NewData(driver, client)
 	if err != nil {
 		return nil, err
 	}
-	loginRepo := data.NewLoginRepo(dataData, logger)
-	loginUseCase := biz.NewLoginUseCase(loginRepo, logger)
+	loginRepo := data.NewLoginRepo(dataData)
+	loginUseCase := biz.NewLoginUseCase(loginRepo)
 	loginService := service.NewLoginService(loginUseCase)
 	grpcServer := server.NewGRPCServer(loginService)
 	httpServer := server.NewHTTPServer(loginService)
-	registrar := app.ServiceRegistry()
-	kratosApp := kratos2.NewKratos(logger, grpcServer, httpServer, registrar)
+	registrar, _ := app.GetServiceRegistry()
+	options := kratos2.ProvideKratosOptions(grpcServer, httpServer, registrar)
+	kratosApp, _ := kratos2.NewKratos(options)
 	return kratosApp, nil
 }

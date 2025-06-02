@@ -34,6 +34,14 @@ func (uu *UserUpdate) SetNum(s string) *UserUpdate {
 	return uu
 }
 
+// SetNillableNum sets the "num" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableNum(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetNum(*s)
+	}
+	return uu
+}
+
 // SetAccount sets the "account" field.
 func (uu *UserUpdate) SetAccount(s string) *UserUpdate {
 	uu.mutation.SetAccount(s)
@@ -79,6 +87,14 @@ func (uu *UserUpdate) SetNillablePhone(s *string) *UserUpdate {
 // SetNickname sets the "nickname" field.
 func (uu *UserUpdate) SetNickname(s string) *UserUpdate {
 	uu.mutation.SetNickname(s)
+	return uu
+}
+
+// SetNillableNickname sets the "nickname" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableNickname(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetNickname(*s)
+	}
 	return uu
 }
 
@@ -138,6 +154,14 @@ func (uu *UserUpdate) SetRegisterSource(i int32) *UserUpdate {
 	return uu
 }
 
+// SetNillableRegisterSource sets the "register_source" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableRegisterSource(i *int32) *UserUpdate {
+	if i != nil {
+		uu.SetRegisterSource(*i)
+	}
+	return uu
+}
+
 // AddRegisterSource adds i to the "register_source" field.
 func (uu *UserUpdate) AddRegisterSource(i int32) *UserUpdate {
 	uu.mutation.AddRegisterSource(i)
@@ -147,6 +171,14 @@ func (uu *UserUpdate) AddRegisterSource(i int32) *UserUpdate {
 // SetLastLoginAt sets the "last_login_at" field.
 func (uu *UserUpdate) SetLastLoginAt(t time.Time) *UserUpdate {
 	uu.mutation.SetLastLoginAt(t)
+	return uu
+}
+
+// SetNillableLastLoginAt sets the "last_login_at" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLastLoginAt(t *time.Time) *UserUpdate {
+	if t != nil {
+		uu.SetLastLoginAt(*t)
+	}
 	return uu
 }
 
@@ -330,6 +362,14 @@ func (uuo *UserUpdateOne) SetNum(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableNum sets the "num" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableNum(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetNum(*s)
+	}
+	return uuo
+}
+
 // SetAccount sets the "account" field.
 func (uuo *UserUpdateOne) SetAccount(s string) *UserUpdateOne {
 	uuo.mutation.SetAccount(s)
@@ -375,6 +415,14 @@ func (uuo *UserUpdateOne) SetNillablePhone(s *string) *UserUpdateOne {
 // SetNickname sets the "nickname" field.
 func (uuo *UserUpdateOne) SetNickname(s string) *UserUpdateOne {
 	uuo.mutation.SetNickname(s)
+	return uuo
+}
+
+// SetNillableNickname sets the "nickname" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableNickname(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetNickname(*s)
+	}
 	return uuo
 }
 
@@ -434,6 +482,14 @@ func (uuo *UserUpdateOne) SetRegisterSource(i int32) *UserUpdateOne {
 	return uuo
 }
 
+// SetNillableRegisterSource sets the "register_source" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableRegisterSource(i *int32) *UserUpdateOne {
+	if i != nil {
+		uuo.SetRegisterSource(*i)
+	}
+	return uuo
+}
+
 // AddRegisterSource adds i to the "register_source" field.
 func (uuo *UserUpdateOne) AddRegisterSource(i int32) *UserUpdateOne {
 	uuo.mutation.AddRegisterSource(i)
@@ -443,6 +499,14 @@ func (uuo *UserUpdateOne) AddRegisterSource(i int32) *UserUpdateOne {
 // SetLastLoginAt sets the "last_login_at" field.
 func (uuo *UserUpdateOne) SetLastLoginAt(t time.Time) *UserUpdateOne {
 	uuo.mutation.SetLastLoginAt(t)
+	return uuo
+}
+
+// SetNillableLastLoginAt sets the "last_login_at" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLastLoginAt(t *time.Time) *UserUpdateOne {
+	if t != nil {
+		uuo.SetLastLoginAt(*t)
+	}
 	return uuo
 }
 

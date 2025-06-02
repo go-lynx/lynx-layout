@@ -4,12 +4,12 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	loginV1 "github.com/go-lynx/lynx-layout/api/login/v1"
 	"github.com/go-lynx/lynx-layout/internal/service"
-	lynx "github.com/go-lynx/lynx/plugin/http"
+	lynx "github.com/go-lynx/plugins/service/http/v2"
 )
 
 func NewHTTPServer(
 	login *service.LoginService) *http.Server {
-	h := lynx.GetHTTP()
+	h := lynx.GetHttpServer()
 	loginV1.RegisterLoginHTTPServer(h, login)
 	return h
 }

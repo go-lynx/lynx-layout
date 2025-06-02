@@ -9,6 +9,6 @@ import (
 var ProviderSet = wire.NewSet(
 	NewGRPCServer,
 	NewHTTPServer,
-	app.ServiceRegistry,
-	app.ServiceDiscovery,
+	app.GetServiceRegistry,
+	app.GetServiceDiscovery,
 )

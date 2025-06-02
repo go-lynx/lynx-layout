@@ -1,28 +1,39 @@
+// 指定使用 Protocol Buffers 3 版本的语法
 syntax = "proto3";
 
+// 定义 proto 文件的包名，用于组织和避免命名冲突
 package layout.login.v1;
 
+// 导入 Google API 注解，用于定义 HTTP 接口映射
 import "google/api/annotations.proto";
+// 导入验证规则库，用于对消息字段进行验证
 import "validate/validate.proto";
 
+// 指定生成的 Go 代码的包名和导入路径
 option go_package = "github.com/go-lynx/lynx-layout/api/login/v1;v1";
+// 指示为每个消息生成单独的 Java 文件
 option java_multiple_files = true;
+// 指定生成的 Java 代码的包名
 option java_package = "github.com.go-lynx.lynx-layout.api.login.v1";
+// 指定生成的 Java 外部类名
 option java_outer_classname = "LoginProtoV1";
 
-
+// 定义 Login 服务，包含用户登录相关的 RPC 方法
 service Login {
-
+  // 定义 Login RPC 方法，接收 LoginRequest 消息，返回 LoginReply 消息
   rpc Login (LoginRequest) returns (LoginReply) {
+    // 使用 Google API 注解定义 HTTP 映射，将该 RPC 方法映射为 POST 请求
     option (google.api.http) = {
-      post: "/login"
-      body: "*"
+      post: "/login"  // 指定 HTTP 请求方法为 POST，请求路径为 /login
+      body: "*"       // 表示请求体包含整个 LoginRequest 消息
     };
   }
-
 }
 
+// 定义登录请求消息
 message LoginRequest {
+  // 用户账号字段，字段编号为 1
+  // 使用 validate 规则验证账号长度，最小长度为 5，最大长度为 32
   string account = 1
   [
     (validate.rules).string = {
@@ -30,6 +41,8 @@ message LoginRequest {
       max_len : 32
     }
   ];
+  // 用户密码字段，字段编号为 2
+  // 使用 validate 规则验证密码长度，最小长度为 8，最大长度为 32
   string password = 2
   [
     (validate.rules).string = {
@@ -39,18 +52,22 @@ message LoginRequest {
   ];
 }
 
+// 定义登录响应消息
 message LoginReply {
-
+  // 认证令牌字段，字段编号为 1
   string token = 1;
+  // 用户信息字段，字段编号为 2
   UserInfo user = 2;
-
 }
 
+// 定义用户信息消息
 message UserInfo{
-
+  // 用户编号字段，字段编号为 1
   string num = 1;
+  // 用户账号字段，字段编号为 2
   string account = 2;
+  // 用户昵称字段，字段编号为 3
   string nickName = 3;
+  // 用户头像 URL 字段，字段编号为 4
   string avatar = 4;
-
 }
