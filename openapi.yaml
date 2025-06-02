@@ -4,12 +4,14 @@
 openapi: 3.0.3
 info:
     title: Login API
+    description: 定义 Login 服务，包含用户登录相关的 RPC 方法
     version: 0.0.1
 paths:
     /login:
         post:
             tags:
                 - Login
+            description: 定义 Login RPC 方法，接收 LoginRequest 消息，返回 LoginReply 消息
             operationId: Login_Login
             requestBody:
                 content:
@@ -31,25 +33,41 @@ components:
             properties:
                 token:
                     type: string
+                    description: 认证令牌字段，字段编号为 1
                 user:
-                    $ref: '#/components/schemas/layout.login.v1.UserInfo'
+                    allOf:
+                        - $ref: '#/components/schemas/layout.login.v1.UserInfo'
+                    description: 用户信息字段，字段编号为 2
+            description: 定义登录响应消息
         layout.login.v1.LoginRequest:
             type: object
             properties:
                 account:
                     type: string
+                    description: |-
+                        用户账号字段，字段编号为 1
+                         使用 validate 规则验证账号长度，最小长度为 5，最大长度为 32
                 password:
                     type: string
+                    description: |-
+                        用户密码字段，字段编号为 2
+                         使用 validate 规则验证密码长度，最小长度为 8，最大长度为 32
+            description: 定义登录请求消息
         layout.login.v1.UserInfo:
             type: object
             properties:
                 num:
                     type: string
+                    description: 用户编号字段，字段编号为 1
                 account:
                     type: string
+                    description: 用户账号字段，字段编号为 2
                 nickName:
                     type: string
+                    description: 用户昵称字段，字段编号为 3
                 avatar:
                     type: string
+                    description: 用户头像 URL 字段，字段编号为 4
+            description: 定义用户信息消息
 tags:
     - name: Login

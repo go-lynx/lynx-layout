@@ -6,5 +6,8 @@ import (
 )
 
 func main() {
-	boot.LynxApplication(wireApp).Run()
+	err := boot.NewLynxApplication(wireApp).Run()
+	if err != nil {
+		panic(err)
+	}
 }

@@ -1,0 +1,24 @@
+lynx:
+  application:
+    name: user-service
+    version: v1.0.0
+  polaris:
+    namespace: dev
+    token: nu/0WRA4EqSR1FagrjRj0fZwPXuGlMpX+zCuWu4uMqy8xr1vRjisSbA25aAC3mtU8MeeRsKhQiDAynUR09I=
+    weight: 100
+    ttl: 5
+    timeout: 5s
+  mysql:
+    driver: mysql
+    source: root:polaris@tcp(127.0.0.1:3306)/demo?charset=utf8mb4&parseTime=True&loc=Local
+    min_conn: 10
+    max_conn: 30
+    max_idle_time: 10s
+  redis:
+    addr: localhost:6379
+  http:
+    addr: :28080
+    timeout: 5s
+  grpc:
+    addr: :28081
+    timeout: 5s

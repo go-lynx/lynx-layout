@@ -12,7 +12,7 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/data"
 	"github.com/go-lynx/lynx-layout/internal/server"
 	"github.com/go-lynx/lynx-layout/internal/service"
-	lynx "github.com/go-lynx/lynx/plugin/kratos"
+	kratos "github.com/go-lynx/lynx/app/kratos"
 	"github.com/google/wire"
 )
 
@@ -24,7 +24,8 @@ func wireApp(log.Logger) (*kratos.App, error) {
 			data.ProviderSet,
 			biz.ProviderSet,
 			service.ProviderSet,
-			lynx.NewKratos,
+			kratos.NewKratos,
+			kratos.ProvideKratosOptions,
 		),
 	)
 }
