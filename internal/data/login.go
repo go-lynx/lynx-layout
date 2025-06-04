@@ -2,9 +2,9 @@ package data
 
 import (
 	"context"
+	"github.com/go-lynx/lynx-layout/api/login/code"
 	"github.com/go-lynx/lynx-layout/internal/biz"
 	"github.com/go-lynx/lynx-layout/internal/bo"
-	"github.com/go-lynx/lynx-layout/internal/code"
 	"github.com/go-lynx/lynx-layout/internal/data/ent/user"
 	"time"
 )

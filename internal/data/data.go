@@ -4,7 +4,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
 	lynxMysql "github.com/go-lynx/plugins/db/mysql/v2"
-	lynxRedis "github.com/go-lynx/plugins/db/redis/v2"
+	lynxRedis "github.com/go-lynx/plugins/nosql/redis/v2"
+	_ "github.com/go-lynx/plugins/tracer/v2"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
@@ -29,7 +30,9 @@ type Data struct {
 // 返回 Data 实例指针和可能出现的错误。
 func NewData(dri *sql.Driver, rdb *redis.Client) (*Data, error) {
 	// 创建 ent 数据库客户端，开启调试模式
-	client := ent.NewClient(ent.Driver(dri), ent.Debug())
+	client := ent.NewClient(
+		ent.Driver(dri),
+	)
 
 	// 初始化 Data 实例
 	d := &Data{
