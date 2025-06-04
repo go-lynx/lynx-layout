@@ -27,7 +27,7 @@ func NewLoginRepo(data *Data) biz.LoginRepo {
 // FindUserByAccount 根据用户账号查找用户信息。
 // 参数 ctx 是上下文，用于控制请求的生命周期；account 是用户的登录账号。
 // 返回用户业务对象指针和可能出现的错误。
-func (r loginRepo) FindUserByAccount(ctx context.Context, account string) (*bo.UserBO, error) {
+func (r *loginRepo) FindUserByAccount(ctx context.Context, account string) (*bo.UserBO, error) {
 	// 使用 ent 客户端查询数据库，根据账号查找唯一用户
 	u, err := r.data.db.User.
 		Query().
@@ -52,7 +52,7 @@ func (r loginRepo) FindUserByAccount(ctx context.Context, account string) (*bo.U
 // UpdateUserLastLoginTime 更新用户的最后登录时间。
 // 参数 ctx 是上下文，用于控制请求的生命周期；bo 是用户业务对象。
 // 返回可能出现的错误。
-func (r loginRepo) UpdateUserLastLoginTime(ctx context.Context, bo *bo.UserBO) error {
+func (r *loginRepo) UpdateUserLastLoginTime(ctx context.Context, bo *bo.UserBO) error {
 	// 使用 ent 客户端更新数据库中用户的最后登录时间
 	rows, err := r.data.db.User.
 		Update().
@@ -75,7 +75,7 @@ func (r loginRepo) UpdateUserLastLoginTime(ctx context.Context, bo *bo.UserBO) e
 // 目前该方法为 TODO 状态，计划通过 gRPC 远程调用其他微服务实现。
 // 参数 ctx 是上下文，用于控制请求的生命周期；bo 是用户业务对象。
 // 返回认证令牌字符串和可能出现的错误。
-func (r loginRepo) LoginAuth(ctx context.Context, bo *bo.UserBO) (string, error) {
+func (r *loginRepo) LoginAuth(ctx context.Context, bo *bo.UserBO) (string, error) {
 	// TODO Remote invocation of other microservices via gRPC
 	return "", nil
 }
