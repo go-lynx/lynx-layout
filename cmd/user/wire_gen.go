@@ -16,7 +16,7 @@ import (
 	"github.com/go-lynx/lynx/app"
 	kratos2 "github.com/go-lynx/lynx/app/kratos"
 	db "github.com/go-lynx/plugins/db/mysql/v2"
-	"github.com/go-lynx/plugins/db/redis/v2"
+	"github.com/go-lynx/plugins/nosql/redis/v2"
 )
 
 import (

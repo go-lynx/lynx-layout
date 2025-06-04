@@ -2,6 +2,7 @@ lynx:
   application:
     name: user-service
     version: v1.0.0
+    close_banner: false
   polaris:
     namespace: dev
     token: nu/0WRA4EqSR1FagrjRj0fZwPXuGlMpX+zCuWu4uMqy8xr1vRjisSbA25aAC3mtU8MeeRsKhQiDAynUR09I=
@@ -14,11 +15,24 @@ lynx:
     min_conn: 10
     max_conn: 30
     max_idle_time: 10s
+    max_life_time: 300s
   redis:
-    addr: localhost:6379
+    network: tcp
+    addr: 127.0.0.1:6379
+    db: 0
+    password: ""
+    min_idle_conns: 10
+    max_idle_conns: 30
+    conn_max_idle_time: 10s
   http:
     addr: :28080
-    timeout: 5s
+    timeout: 10s
+    response:
+      json:
+        emitUnpopulated: false
   grpc:
     addr: :28081
-    timeout: 5s
+    timeout: 10s
+  tracer:
+    enable: true
+    addr: None

@@ -2,9 +2,9 @@ package biz
 
 import (
 	"context"
-	"errors"
+	"github.com/go-kratos/kratos/v2/errors"
+	"github.com/go-lynx/lynx-layout/api/login/code"
 	"github.com/go-lynx/lynx-layout/internal/bo"
-	"github.com/go-lynx/lynx-layout/internal/code"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
 	"github.com/go-lynx/lynx/app/util"
 )
@@ -49,6 +49,9 @@ func (uc *LoginUseCase) UserLogin(ctx context.Context, bo *bo.UserBO) (*bo.UserB
 	// 检查是否未找到用户
 	if err != nil && errors.As(err, &notFoundError) {
 		return nil, code.UserDoesNotExist
+	}
+	if err != nil {
+		return nil, err
 	}
 	// 验证用户输入的密码是否正确
 	if !util.CheckCiphertext(bo.Password, u.Password) {
