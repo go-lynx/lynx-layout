@@ -4,7 +4,7 @@ lynx:
     version: v1.0.0
     close_banner: false
   polaris:
-    namespace: dev
+    namespace: demo
     token: nu/0WRA4EqSR1FagrjRj0fZwPXuGlMpX+zCuWu4uMqy8xr1vRjisSbA25aAC3mtU8MeeRsKhQiDAynUR09I=
     weight: 100
     ttl: 5
@@ -35,4 +35,5 @@ lynx:
     timeout: 10s
   tracer:
     enable: true
-    addr: None
+    addr: 127.0.0.1:4317
+    ratio: 1
