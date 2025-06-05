@@ -3,9 +3,9 @@ package data
 import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
-	lynxMysql "github.com/go-lynx/plugins/db/mysql/v2"
-	lynxRedis "github.com/go-lynx/plugins/nosql/redis/v2"
-	_ "github.com/go-lynx/plugins/tracer/v2"
+	lynxMysql "github.com/go-lynx/lynx/plugins/db/mysql/v2"
+	lynxRedis "github.com/go-lynx/lynx/plugins/nosql/redis/v2"
+	_ "github.com/go-lynx/lynx/plugins/tracer/v2"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
