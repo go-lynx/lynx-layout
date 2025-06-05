@@ -5,14 +5,14 @@ go 1.24.3
 require (
 	entgo.io/ent v0.14.4
 	github.com/go-kratos/kratos/v2 v2.8.4
-	github.com/go-lynx/lynx v0.1.4-beta
+	github.com/go-lynx/lynx v1.2.1
 	github.com/go-lynx/lynx-layout/api v0.0.0-20231226093010-b62a1b27588b
-	github.com/go-lynx/plugins/db/mysql/v2 v2.0.0
-	github.com/go-lynx/plugins/nosql/redis/v2 v2.0.0
-	github.com/go-lynx/plugins/polaris/v2 v2.0.0
-	github.com/go-lynx/plugins/service/grpc/v2 v2.0.0
-	github.com/go-lynx/plugins/service/http/v2 v2.0.0
-	github.com/go-lynx/plugins/tracer/v2 v2.0.0
+	github.com/go-lynx/lynx/plugins/db/mysql/v2 v2.0.0
+	github.com/go-lynx/lynx/plugins/nosql/redis/v2 v2.0.0
+	github.com/go-lynx/lynx/plugins/polaris/v2 v2.0.0
+	github.com/go-lynx/lynx/plugins/service/grpc/v2 v2.0.0
+	github.com/go-lynx/lynx/plugins/service/http/v2 v2.0.0
+	github.com/go-lynx/lynx/plugins/tracer/v2 v2.0.0
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/google/wire v0.6.0
 	github.com/redis/go-redis/v9 v9.8.0
@@ -92,17 +92,3 @@ require (
 )
 
 replace github.com/go-lynx/lynx-layout/api => ./api
-
-replace github.com/go-lynx/lynx => ../lynx
-
-replace github.com/go-lynx/plugins/service/grpc/v2 => ../lynx/plugins/service/grpc
-
-replace github.com/go-lynx/plugins/service/http/v2 => ../lynx/plugins/service/http
-
-replace github.com/go-lynx/plugins/nosql/redis/v2 => ../lynx/plugins/nosql/redis
-
-replace github.com/go-lynx/plugins/db/mysql/v2 => ../lynx/plugins/db/mysql
-
-replace github.com/go-lynx/plugins/polaris/v2 => ../lynx/plugins/polaris
-
-replace github.com/go-lynx/plugins/tracer/v2 => ../lynx/plugins/tracer
