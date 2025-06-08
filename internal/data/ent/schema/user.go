@@ -55,15 +55,24 @@ func (User) Fields() []ent.Field {
 		field.Int32("register_source").
 			Comment("注册来源 1:web端;2:app端"),
 		field.Time("last_login_at").
-			SchemaType(map[string]string{dialect.MySQL: "datetime(3)"}).
+			SchemaType(map[string]string{
+				dialect.MySQL:    "datetime(3)",
+				dialect.Postgres: "timestamptz",
+			}).
 			Comment("最近登录时间"),
 		field.Time("created_at").
 			Default(time.Now).
-			SchemaType(map[string]string{dialect.MySQL: "datetime(3)"}).
+			SchemaType(map[string]string{
+				dialect.MySQL:    "datetime(3)",
+				dialect.Postgres: "timestamptz",
+			}).
 			Comment("创建时间"),
 		field.Time("updated_at").
 			Default(time.Now).
-			SchemaType(map[string]string{dialect.MySQL: "datetime(3)"}).
+			SchemaType(map[string]string{
+				dialect.MySQL:    "datetime(3)",
+				dialect.Postgres: "timestamptz",
+			}).
 			Comment("修改时间"),
 	}
 }

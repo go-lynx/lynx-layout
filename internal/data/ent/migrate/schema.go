@@ -20,9 +20,9 @@ var (
 		{Name: "stats", Type: field.TypeInt32, Comment: "账号状态 1:正常;2:封禁", Default: 1},
 		{Name: "note", Type: field.TypeString, Size: 120, Comment: "个人简介", Default: ""},
 		{Name: "register_source", Type: field.TypeInt32, Comment: "注册来源 1:web端;2:app端"},
-		{Name: "last_login_at", Type: field.TypeTime, Comment: "最近登录时间", SchemaType: map[string]string{"mysql": "datetime(3)"}},
-		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间", SchemaType: map[string]string{"mysql": "datetime(3)"}},
-		{Name: "updated_at", Type: field.TypeTime, Comment: "修改时间", SchemaType: map[string]string{"mysql": "datetime(3)"}},
+		{Name: "last_login_at", Type: field.TypeTime, Comment: "最近登录时间", SchemaType: map[string]string{"mysql": "datetime(3)", "postgres": "timestamptz"}},
+		{Name: "created_at", Type: field.TypeTime, Comment: "创建时间", SchemaType: map[string]string{"mysql": "datetime(3)", "postgres": "timestamptz"}},
+		{Name: "updated_at", Type: field.TypeTime, Comment: "修改时间", SchemaType: map[string]string{"mysql": "datetime(3)", "postgres": "timestamptz"}},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
