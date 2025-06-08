@@ -10,8 +10,8 @@ lynx:
     ttl: 5
     timeout: 5s
   mysql:
-    driver: mysql
-    source: root:polaris@tcp(127.0.0.1:3306)/demo?charset=utf8mb4&parseTime=True&loc=Local
+    driver: postgres
+    source: postgres://admin:123456@127.0.0.1:5432/demo?sslmode=disable
     min_conn: 10
     max_conn: 30
     max_idle_time: 10s
@@ -37,3 +37,6 @@ lynx:
     enable: true
     addr: 127.0.0.1:4317
     ratio: 1
+  log:
+    level: debug
+    console_output: true

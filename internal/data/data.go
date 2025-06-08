@@ -1,12 +1,13 @@
 package data
 
 import (
+	"context"
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
-	lynxMysql "github.com/go-lynx/lynx/plugins/db/mysql/v2"
-	lynxRedis "github.com/go-lynx/lynx/plugins/nosql/redis/v2"
-	_ "github.com/go-lynx/lynx/plugins/tracer/v2"
-	_ "github.com/go-sql-driver/mysql"
+	"github.com/go-lynx/lynx/app/log"
+	lynxPgsql "github.com/go-lynx/lynx/plugins/db/pgsql"
+	lynxRedis "github.com/go-lynx/lynx/plugins/nosql/redis"
+	_ "github.com/go-lynx/lynx/plugins/tracer"
 	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
 )
@@ -16,7 +17,7 @@ import (
 var ProviderSet = wire.NewSet(
 	NewData,
 	NewLoginRepo,
-	lynxMysql.GetDriver,
+	lynxPgsql.GetDriver,
 	lynxRedis.GetRedis)
 
 // Data 结构体封装了数据库客户端和 Redis 客户端，用于项目的数据操作。
@@ -32,7 +33,13 @@ func NewData(dri *sql.Driver, rdb *redis.Client) (*Data, error) {
 	// 创建 ent 数据库客户端，开启调试模式
 	client := ent.NewClient(
 		ent.Driver(dri),
+		ent.Debug(),
 	)
+	// auto create database table
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Errorf("failed creating database schema resources: %v", err)
+		return nil, err
+	}
 
 	// 初始化 Data 实例
 	d := &Data{

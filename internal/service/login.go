@@ -5,6 +5,8 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/biz"
 	"github.com/go-lynx/lynx-layout/internal/bo"
 	"github.com/go-lynx/lynx/app/log"
+	"github.com/go-lynx/lynx/plugins/nosql/redis/redislock"
+	"time"
 
 	v1 "github.com/go-lynx/lynx-layout/api/login/v1"
 )
@@ -28,6 +30,12 @@ func NewLoginService(uc *biz.LoginUseCase) *LoginService {
 // 返回登录响应和可能出现的错误。
 func (svc *LoginService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.LoginReply, error) {
 	log.InfofCtx(ctx, "LoginService.Login 日志打印测试1")
+
+	err := redislock.Lock(ctx, "login", 10*time.Second, func() error {
+		log.InfofCtx(ctx, "LoginService.Login 日志打印测试")
+		return nil
+	})
+
 	// 调用业务逻辑层的 UserLogin 方法进行用户登录操作
 	u, err := svc.uc.UserLogin(ctx, &bo.UserBO{
 		Account:  req.Account,  // 从请求中获取用户账号
@@ -38,7 +46,7 @@ func (svc *LoginService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.L
 		return nil, err
 	}
 	// 登录成功，构造登录响应
-	log.Infof("LoginService.Login 日志打印测试2")
+	log.InfofCtx(ctx, "LoginService.Login 日志打印测试2")
 	return &v1.LoginReply{
 		Token: u.Token, // 将业务逻辑层返回的令牌添加到响应中
 		User: &v1.UserInfo{

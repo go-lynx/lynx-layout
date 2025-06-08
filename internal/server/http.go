@@ -4,7 +4,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	loginV1 "github.com/go-lynx/lynx-layout/api/login/v1"
 	"github.com/go-lynx/lynx-layout/internal/service"
-	lynx "github.com/go-lynx/lynx/plugins/service/http/v2"
+	lynx "github.com/go-lynx/lynx/plugins/service/http"
 )
 
 func NewHTTPServer(
