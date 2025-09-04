@@ -1,39 +1,39 @@
-// 指定使用 Protocol Buffers 3 版本的语法
+// Specify using Protocol Buffers version 3 syntax
 syntax = "proto3";
 
-// 定义 proto 文件的包名，用于组织和避免命名冲突
+// Define the package name for the proto file, used for organization and avoiding naming conflicts
 package layout.login.v1;
 
-// 导入 Google API 注解，用于定义 HTTP 接口映射
+// Import Google API annotations for defining HTTP interface mappings
 import "google/api/annotations.proto";
-// 导入验证规则库，用于对消息字段进行验证
+// Import validation rules library for validating message fields
 import "validate/validate.proto";
 
-// 指定生成的 Go 代码的包名和导入路径
+// Specify the package name and import path for generated Go code
 option go_package = "github.com/go-lynx/lynx-layout/api/login/v1;v1";
-// 指示为每个消息生成单独的 Java 文件
+// Indicate to generate separate Java files for each message
 option java_multiple_files = true;
-// 指定生成的 Java 代码的包名
+// Specify the package name for generated Java code
 option java_package = "github.com.go-lynx.lynx-layout.api.login.v1";
-// 指定生成的 Java 外部类名
+// Specify the outer class name for generated Java code
 option java_outer_classname = "LoginProtoV1";
 
-// 定义 Login 服务，包含用户登录相关的 RPC 方法
+// Define Login service containing user login related RPC methods
 service Login {
-  // 定义 Login RPC 方法，接收 LoginRequest 消息，返回 LoginReply 消息
+  // Define Login RPC method that receives LoginRequest message and returns LoginReply message
   rpc Login (LoginRequest) returns (LoginReply) {
-    // 使用 Google API 注解定义 HTTP 映射，将该 RPC 方法映射为 POST 请求
+    // Use Google API annotations to define HTTP mapping, mapping this RPC method to POST request
     option (google.api.http) = {
-      post: "/login"  // 指定 HTTP 请求方法为 POST，请求路径为 /login
-      body: "*"       // 表示请求体包含整个 LoginRequest 消息
+      post: "/login"  // Specify HTTP request method as POST, request path as /login
+      body: "*"       // Indicates that the request body contains the entire LoginRequest message
     };
   }
 }
 
-// 定义登录请求消息
+// Define login request message
 message LoginRequest {
-  // 用户账号字段，字段编号为 1
-  // 使用 validate 规则验证账号长度，最小长度为 5，最大长度为 32
+  // User account field, field number 1
+  // Use validate rules to validate account length, minimum length 5, maximum length 32
   string account = 1
   [
     (validate.rules).string = {
@@ -41,8 +41,8 @@ message LoginRequest {
       max_len : 32
     }
   ];
-  // 用户密码字段，字段编号为 2
-  // 使用 validate 规则验证密码长度，最小长度为 8，最大长度为 32
+  // User password field, field number 2
+  // Use validate rules to validate password length, minimum length 8, maximum length 32
   string password = 2
   [
     (validate.rules).string = {
@@ -52,22 +52,22 @@ message LoginRequest {
   ];
 }
 
-// 定义登录响应消息
+// Define login response message
 message LoginReply {
-  // 认证令牌字段，字段编号为 1
+  // Authentication token field, field number 1
   string token = 1;
-  // 用户信息字段，字段编号为 2
+  // User information field, field number 2
   UserInfo user = 2;
 }
 
-// 定义用户信息消息
+// Define user information message
 message UserInfo{
-  // 用户编号字段，字段编号为 1
+  // User number field, field number 1
   string num = 1;
-  // 用户账号字段，字段编号为 2
+  // User account field, field number 2
   string account = 2;
-  // 用户昵称字段，字段编号为 3
+  // User nickname field, field number 3
   string nickName = 3;
-  // 用户头像 URL 字段，字段编号为 4
+  // User avatar URL field, field number 4
   string avatar = 4;
 }

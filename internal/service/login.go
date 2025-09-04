@@ -2,58 +2,59 @@ package service
 
 import (
 	"context"
+	"time"
+
 	"github.com/go-lynx/lynx-layout/internal/biz"
 	"github.com/go-lynx/lynx-layout/internal/bo"
 	"github.com/go-lynx/lynx/app/log"
 	"github.com/go-lynx/lynx/plugins/nosql/redis/redislock"
-	"time"
 
 	v1 "github.com/go-lynx/lynx-layout/api/login/v1"
 )
 
-// LoginService 实现了 v1.LoginServer 接口，用于处理用户登录相关的 RPC 请求。
-// 该服务依赖业务逻辑层的 LoginUseCase 来完成具体的登录业务。
+// LoginService implements the v1.LoginServer interface for handling user login related RPC requests.
+// This service depends on the business logic layer's LoginUseCase to complete specific login business.
 type LoginService struct {
-	v1.UnimplementedLoginServer                   // 嵌入 UnimplementedLoginServer，自动实现接口的空方法
-	uc                          *biz.LoginUseCase // 业务逻辑层的登录用例实例，负责处理登录的核心业务逻辑
+	v1.UnimplementedLoginServer                   // Embed UnimplementedLoginServer to automatically implement empty methods of the interface
+	uc                          *biz.LoginUseCase // Login use case instance from business logic layer, responsible for handling core login business logic
 }
 
-// NewLoginService 创建一个新的 LoginService 实例。
-// 参数 uc 是业务逻辑层的登录用例实例。
-// 返回一个指向 LoginService 实例的指针。
+// NewLoginService creates a new LoginService instance.
+// Parameter uc is the login use case instance from the business logic layer.
+// Returns a pointer to a LoginService instance.
 func NewLoginService(uc *biz.LoginUseCase) *LoginService {
 	return &LoginService{uc: uc}
 }
 
-// Login 处理用户登录的 RPC 请求。
-// 参数 ctx 是上下文，用于控制请求的生命周期；req 是客户端发送的登录请求。
-// 返回登录响应和可能出现的错误。
+// Login handles user login RPC requests.
+// Parameters: ctx is the context for controlling the request lifecycle; req is the login request sent by the client.
+// Returns login response and any possible errors.
 func (svc *LoginService) Login(ctx context.Context, req *v1.LoginRequest) (*v1.LoginReply, error) {
-	log.InfofCtx(ctx, "LoginService.Login 日志打印测试1")
+	log.InfofCtx(ctx, "LoginService.Login log print test 1")
 
 	err := redislock.Lock(ctx, "login", 10*time.Second, func() error {
-		log.InfofCtx(ctx, "LoginService.Login 日志打印测试")
+		log.InfofCtx(ctx, "LoginService.Login log print test")
 		return nil
 	})
 
-	// 调用业务逻辑层的 UserLogin 方法进行用户登录操作
+	// Call the UserLogin method of the business logic layer to perform user login operation
 	u, err := svc.uc.UserLogin(ctx, &bo.UserBO{
-		Account:  req.Account,  // 从请求中获取用户账号
-		Password: req.Password, // 从请求中获取用户密码
+		Account:  req.Account,  // Get user account from request
+		Password: req.Password, // Get user password from request
 	})
 	if err != nil {
-		// 登录过程中出现错误，返回 nil 和错误信息
+		// Error occurred during login process, return nil and error information
 		return nil, err
 	}
-	// 登录成功，构造登录响应
-	log.InfofCtx(ctx, "LoginService.Login 日志打印测试2")
+	// Login successful, construct login response
+	log.InfofCtx(ctx, "LoginService.Login log print test 2")
 	return &v1.LoginReply{
-		Token: u.Token, // 将业务逻辑层返回的令牌添加到响应中
+		Token: u.Token, // Add the token returned by the business logic layer to the response
 		User: &v1.UserInfo{
-			Account:  u.Account,  // 将用户账号添加到用户信息中
-			Num:      u.Num,      // 将用户编号添加到用户信息中
-			NickName: u.Nickname, // 将用户昵称添加到用户信息中
-			Avatar:   u.Avatar,   // 将用户头像 URL 添加到用户信息中
+			Account:  u.Account,  // Add user account to user information
+			Num:      u.Num,      // Add user number to user information
+			NickName: u.Nickname, // Add user nickname to user information
+			Avatar:   u.Avatar,   // Add user avatar URL to user information
 		},
 	}, nil
 }

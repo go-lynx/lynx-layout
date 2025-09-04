@@ -2,72 +2,73 @@ package biz
 
 import (
 	"context"
+
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-lynx/lynx-layout/api/login/code"
 	"github.com/go-lynx/lynx-layout/internal/bo"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
-	"github.com/go-lynx/lynx/app/util"
+	"github.com/go-lynx/lynx/app/utils/auth"
 )
 
-// LoginUseCase 定义了用户登录相关的用例，负责协调登录业务逻辑。
+// LoginUseCase defines user login related use cases, responsible for coordinating login business logic.
 type LoginUseCase struct {
-	repo LoginRepo // 实现登录相关数据操作的仓库接口
+	repo LoginRepo // Repository interface that implements login-related data operations
 }
 
-// NewLoginUseCase 创建一个新的 LoginUseCase 实例。
-// 参数 repo 是实现 LoginRepo 接口的仓库实例，logger 是日志记录器。
-// 返回一个指向 LoginUseCase 实例的指针。
+// NewLoginUseCase creates a new LoginUseCase instance.
+// Parameter repo is a repository instance that implements the LoginRepo interface, logger is the logger.
+// Returns a pointer to a LoginUseCase instance.
 func NewLoginUseCase(repo LoginRepo) *LoginUseCase {
 	return &LoginUseCase{
 		repo: repo,
 	}
 }
 
-// LoginRepo 定义了登录业务所需的数据操作接口。
+// LoginRepo defines the data operation interface required for login business.
 type LoginRepo interface {
-	// FindUserByAccount 根据用户账号查找用户信息。
-	// 参数 ctx 是上下文，account 是用户账号。
-	// 返回用户业务对象指针和可能的错误。
+	// FindUserByAccount finds user information based on user account.
+	// Parameters: ctx is the context, account is the user account.
+	// Returns user business object pointer and any possible errors.
 	FindUserByAccount(context.Context, string) (*bo.UserBO, error)
-	// UpdateUserLastLoginTime 更新用户的最后登录时间。
-	// 参数 ctx 是上下文，user 是用户业务对象。
-	// 返回可能的错误。
+	// UpdateUserLastLoginTime updates the user's last login time.
+	// Parameters: ctx is the context, user is the user business object.
+	// Returns any possible errors.
 	UpdateUserLastLoginTime(context.Context, *bo.UserBO) error
-	// LoginAuth 进行用户登录认证并生成认证令牌。
-	// 参数 ctx 是上下文，user 是用户业务对象。
-	// 返回认证令牌字符串和可能的错误。
+	// LoginAuth performs user login authentication and generates authentication token.
+	// Parameters: ctx is the context, user is the user business object.
+	// Returns authentication token string and any possible errors.
 	LoginAuth(context.Context, *bo.UserBO) (string, error)
 }
 
-// UserLogin 处理用户登录逻辑。
-// 参数 ctx 是上下文，bo 是包含用户登录信息的业务对象。
-// 返回包含用户信息和认证令牌的业务对象指针，以及可能的错误。
+// UserLogin handles user login logic.
+// Parameters: ctx is the context, bo is the business object containing user login information.
+// Returns a business object pointer containing user information and authentication token, and any possible errors.
 func (uc *LoginUseCase) UserLogin(ctx context.Context, bo *bo.UserBO) (*bo.UserBO, error) {
-	// 根据用户账号查找用户信息
+	// Find user information based on user account
 	u, err := uc.repo.FindUserByAccount(ctx, bo.Account)
 	var notFoundError *ent.NotFoundError
-	// 检查是否未找到用户
+	// Check if user is not found
 	if err != nil && errors.As(err, &notFoundError) {
 		return nil, code.UserDoesNotExist
 	}
 	if err != nil {
 		return nil, err
 	}
-	// 验证用户输入的密码是否正确
-	if !util.CheckCiphertext(bo.Password, u.Password) {
+	// Verify if the user's input password is correct
+	if !auth.CheckPassword(u.Password, bo.Password) {
 		return nil, code.IncorrectPassword
 	}
-	// 更新用户的最后登录时间
+	// Update user's last login time
 	err = uc.repo.UpdateUserLastLoginTime(ctx, u)
 	if err != nil {
 		return nil, err
 	}
-	// 进行登录认证并获取认证令牌
+	// Perform login authentication and get authentication token
 	auth, err := uc.repo.LoginAuth(ctx, u)
 	if err != nil {
 		return nil, err
 	}
-	// 将认证令牌赋值给用户业务对象
+	// Assign authentication token to user business object
 	u.Token = auth
 	return u, nil
 }
