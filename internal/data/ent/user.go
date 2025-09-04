@@ -12,35 +12,35 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/data/ent/user"
 )
 
-// 用户表
+// User table
 type User struct {
 	config `json:"-"`
 	// ID of the ent.
-	// 主键ID
+	// Primary key ID
 	ID int64 `json:"id,omitempty"`
-	// 编号
+	// User number
 	Num string `json:"num,omitempty"`
-	// 账号
+	// Account
 	Account string `json:"account,omitempty"`
-	// 密码
+	// Password
 	Password string `json:"password,omitempty"`
-	// 手机号
+	// Phone number
 	Phone string `json:"phone,omitempty"`
-	// 昵称
+	// Nickname
 	Nickname string `json:"nickname,omitempty"`
-	// 个人肖像
+	// Avatar
 	Avatar string `json:"avatar,omitempty"`
-	// 账号状态 1:正常;2:封禁
+	// Account status 1:normal;2:banned
 	Stats int32 `json:"stats,omitempty"`
-	// 个人简介
+	// Personal introduction
 	Note string `json:"note,omitempty"`
-	// 注册来源 1:web端;2:app端
+	// Registration source 1:web;2:app
 	RegisterSource int32 `json:"register_source,omitempty"`
-	// 最近登录时间
+	// Last login time
 	LastLoginAt time.Time `json:"last_login_at,omitempty"`
-	// 创建时间
+	// Created time
 	CreatedAt time.Time `json:"created_at,omitempty"`
-	// 修改时间
+	// Updated time
 	UpdatedAt    time.Time `json:"updated_at,omitempty"`
 	selectValues sql.SelectValues
 }

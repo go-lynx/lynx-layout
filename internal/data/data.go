@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
 	"github.com/go-lynx/lynx/app/log"
@@ -12,36 +13,36 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// ProviderSet 是 Google Wire 的提供器集合，用于定义依赖注入的规则。
-// 包含了 NewData、NewLoginRepo 函数，以及从数据库插件和 Redis 插件获取驱动和客户端的函数。
+// ProviderSet is a Google Wire provider set used to define dependency injection rules.
+// It includes NewData, NewLoginRepo functions, and functions to get drivers and clients from database and Redis plugins.
 var ProviderSet = wire.NewSet(
 	NewData,
 	NewLoginRepo,
 	lynxPgsql.GetDriver,
 	lynxRedis.GetRedis)
 
-// Data 结构体封装了数据库客户端和 Redis 客户端，用于项目的数据操作。
+// Data struct encapsulates database client and Redis client for project data operations.
 type Data struct {
-	db  *ent.Client   // 数据库操作客户端
-	rdb *redis.Client // Redis 操作客户端
+	db  *ent.Client   // Database operation client
+	rdb *redis.Client // Redis operation client
 }
 
-// NewData 创建一个新的 Data 实例。
-// 参数 dri 是 SQL 驱动，rdb 是 Redis 客户端，logger 是日志记录器。
-// 返回 Data 实例指针和可能出现的错误。
+// NewData creates a new Data instance.
+// Parameters: dri is the SQL driver, rdb is the Redis client, logger is the logger.
+// Returns a Data instance pointer and any possible errors.
 func NewData(dri *sql.Driver, rdb *redis.Client) (*Data, error) {
-	// 创建 ent 数据库客户端，开启调试模式
+	// Create ent database client with debug mode enabled
 	client := ent.NewClient(
 		ent.Driver(dri),
 		ent.Debug(),
 	)
-	// auto create database table
+	// Auto create database table
 	if err := client.Schema.Create(context.Background()); err != nil {
 		log.Errorf("failed creating database schema resources: %v", err)
 		return nil, err
 	}
 
-	// 初始化 Data 实例
+	// Initialize Data instance
 	d := &Data{
 		db:  client,
 		rdb: rdb,

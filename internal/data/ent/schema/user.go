@@ -1,12 +1,13 @@
 package schema
 
 import (
+	"time"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
-	"time"
 )
 
 // User holds the schema definition for the User entity.
@@ -18,62 +19,62 @@ type User struct {
 func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int64("id").
-			Comment("主键ID").
+			Comment("Primary key ID").
 			Immutable().
 			Positive(),
 		field.String("num").
 			Unique().
 			MaxLen(32).
-			Comment("编号"),
+			Comment("User number"),
 		field.String("account").
 			MaxLen(32).
 			Default("").
-			Comment("账号"),
+			Comment("Account"),
 		field.String("password").
 			MaxLen(100).
 			Default("").
-			Comment("密码"),
+			Comment("Password"),
 		field.String("phone").
 			MaxLen(11).
 			Default("").
-			Comment("手机号"),
+			Comment("Phone number"),
 		field.String("nickname").
 			MaxLen(20).
 			MinLen(1).
-			Comment("昵称"),
+			Comment("Nickname"),
 		field.String("avatar").
 			MaxLen(240).
 			Default("").
-			Comment("个人肖像"),
+			Comment("Avatar"),
 		field.Int32("stats").
 			Default(1).
-			Comment("账号状态 1:正常;2:封禁"),
+			Comment("Account status 1:normal;2:banned"),
 		field.String("note").
 			MaxLen(120).
 			Default("").
-			Comment("个人简介"),
+			Comment("Personal introduction"),
 		field.Int32("register_source").
-			Comment("注册来源 1:web端;2:app端"),
+			Comment("Registration source 1:web;2:app"),
 		field.Time("last_login_at").
 			SchemaType(map[string]string{
 				dialect.MySQL:    "datetime(3)",
 				dialect.Postgres: "timestamptz",
 			}).
-			Comment("最近登录时间"),
+			Comment("Last login time"),
 		field.Time("created_at").
 			Default(time.Now).
 			SchemaType(map[string]string{
 				dialect.MySQL:    "datetime(3)",
 				dialect.Postgres: "timestamptz",
 			}).
-			Comment("创建时间"),
+			Comment("Created time"),
 		field.Time("updated_at").
 			Default(time.Now).
 			SchemaType(map[string]string{
 				dialect.MySQL:    "datetime(3)",
 				dialect.Postgres: "timestamptz",
 			}).
-			Comment("修改时间"),
+			Comment("Updated time"),
 	}
 }
 
@@ -89,6 +90,6 @@ func (User) ID() ent.Field {
 func (User) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.WithComments(true),
-		schema.Comment("用户表"),
+		schema.Comment("User table"),
 	}
 }

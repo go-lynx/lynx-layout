@@ -5,6 +5,7 @@ import (
 	_ "go.uber.org/automaxprocs"
 )
 
+// start the user service
 func main() {
 	err := boot.NewLynxApplication(wireApp).Run()
 	if err != nil {
