@@ -9,7 +9,10 @@ import (
 
 func NewHTTPServer(
 	login *service.LoginService) *http.Server {
-	h := lynx.GetHttpServer()
+	h, err := lynx.GetHttpServer()
+	if err != nil {
+		panic(err)
+	}
 	loginV1.RegisterLoginHTTPServer(h, login)
 	return h
 }

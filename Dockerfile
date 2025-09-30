@@ -10,7 +10,6 @@ FROM debian:stable-slim
 
 COPY --from=builder /src/bin /app
 COPY --from=builder /src/configs /data/conf
-COPY --from=builder /src/polaris.yaml /app/polaris.yaml
 
 WORKDIR /app
 

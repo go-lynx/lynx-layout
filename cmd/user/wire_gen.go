@@ -15,8 +15,8 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/service"
 	"github.com/go-lynx/lynx/app"
 	kratos2 "github.com/go-lynx/lynx/app/kratos"
-	db "github.com/go-lynx/lynx/plugins/db/pgsql"
 	"github.com/go-lynx/lynx/plugins/nosql/redis"
+	db "github.com/go-lynx/lynx/plugins/sql/pgsql"
 )
 
 import (

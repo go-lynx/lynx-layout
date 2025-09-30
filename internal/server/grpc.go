@@ -9,7 +9,10 @@ import (
 
 func NewGRPCServer(
 	login *service.LoginService) *grpc.Server {
-	g := lynx.GetGrpcServer()
+	g, err := lynx.GetGrpcServer(nil)
+	if err != nil {
+		panic(err)
+	}
 	loginV1.RegisterLoginServer(g, login)
 	return g
 }
