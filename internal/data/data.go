@@ -6,8 +6,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
 	"github.com/go-lynx/lynx/app/log"
-	lynxPgsql "github.com/go-lynx/lynx/plugins/db/pgsql"
 	lynxRedis "github.com/go-lynx/lynx/plugins/nosql/redis"
+	lynxPgsql "github.com/go-lynx/lynx/plugins/sql/pgsql"
 	_ "github.com/go-lynx/lynx/plugins/tracer"
 	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
@@ -19,9 +19,9 @@ var ProviderSet = wire.NewSet(
 	NewData,
 	NewLoginRepo,
 	lynxPgsql.GetDriver,
-	lynxRedis.GetRedis)
+	lynxRedis.GetRedis,
+)
 
-// Data struct encapsulates database client and Redis client for project data operations.
 type Data struct {
 	db  *ent.Client   // Database operation client
 	rdb *redis.Client // Redis operation client
