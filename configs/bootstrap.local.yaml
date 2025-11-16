@@ -1,0 +1,32 @@
+# Local-only bootstrap configuration that avoids Polaris
+lynx:
+  application:
+    name: user-service
+    version: v1.0.0
+    close_banner: true
+
+  http:
+    network: tcp
+    addr: 0.0.0.0:8000
+    timeout: 5s
+
+  grpc:
+    service:
+      network: tcp
+      addr: 0.0.0.0:9000
+      timeout: 5s
+
+  pgsql:
+    driver: pgx
+    source: "postgres://lynx:lynx@127.0.0.1:5432/lynx?sslmode=disable"
+    min_conn: 1
+    max_conn: 10
+
+  redis:
+    network: tcp
+    addrs:
+      - 127.0.0.1:6379
+    db: 0
+    dial_timeout: 2s
+    read_timeout: 2s
+    write_timeout: 2s
