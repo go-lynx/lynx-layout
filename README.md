@@ -62,3 +62,29 @@ func main() {
 This code initializes and runs the application with essential components like HTTP, gRPC with TLS, MySQL, Redis, Tracer, and Token.
 
 We hope this guide helps you navigate our Microservice Template Project. Happy coding! 🎉
+
+## 本地开发（无需 Polaris）
+
+如果只想在本地调试服务且不依赖 Polaris，可按照下面的步骤操作：
+
+1. **使用 Go 1.25.3**  
+   ```bash
+   go env -w GOTOOLCHAIN=go1.25.3
+   ```
+   或者确认 `go version` 输出为 `go1.25.3`。
+2. **启动本地依赖（PostgreSQL & Redis）**  
+   ```bash
+   docker compose -f deployments/docker-compose.local.yml up -d
+   ```
+   该 compose 文件会启动 `postgres://lynx:lynx@127.0.0.1:5432/lynx` 与 `redis://127.0.0.1:6379`，并自动暴露到本机端口。
+3. **使用本地配置启动应用**（该配置不会加载 Polaris）  
+   ```bash
+   go run ./cmd/user -conf ./configs/bootstrap.local.yaml
+   ```
+   如果你有自己的数据库/Redis，可以修改 `configs/bootstrap.local.yaml` 中的 `lynx.pgsql` 与 `lynx.redis` 配置。
+4. **调试完成后关闭依赖**  
+   ```bash
+   docker compose -f deployments/docker-compose.local.yml down
+   ```
+
+默认的 `configs/bootstrap.yaml` 仍然保留对 Polaris 的配置，方便需要接入 Polaris 的环境使用。
