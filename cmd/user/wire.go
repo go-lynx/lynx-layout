@@ -6,7 +6,6 @@
 package main
 
 import (
-	"github.com/go-kratos/kratos/v2"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-lynx/lynx-layout/internal/biz"
 	"github.com/go-lynx/lynx-layout/internal/data"
