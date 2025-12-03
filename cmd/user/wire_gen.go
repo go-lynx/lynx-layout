@@ -13,8 +13,8 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/data"
 	"github.com/go-lynx/lynx-layout/internal/server"
 	"github.com/go-lynx/lynx-layout/internal/service"
-	"github.com/go-lynx/lynx/app"
-	kratos2 "github.com/go-lynx/lynx/app/kratos"
+	"github.com/go-lynx/lynx"
+	kratos2 "github.com/go-lynx/lynx/internal/kratos"
 	"github.com/go-lynx/lynx/plugins/nosql/redis"
 	db "github.com/go-lynx/lynx/plugins/sql/pgsql"
 )
@@ -38,7 +38,7 @@ func wireApp(logger log.Logger) (*kratos.App, error) {
 	loginService := service.NewLoginService(loginUseCase)
 	grpcServer := server.NewGRPCServer(loginService)
 	httpServer := server.NewHTTPServer(loginService)
-	registrar, _ := app.GetServiceRegistry()
+	registrar, _ := lynx.GetServiceRegistry()
 	options := kratos2.ProvideKratosOptions(grpcServer, httpServer, registrar)
 	kratosApp, _ := kratos2.NewKratos(options)
 	return kratosApp, nil

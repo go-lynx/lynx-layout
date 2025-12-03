@@ -1,7 +1,7 @@
 package server
 
 import (
-	"github.com/go-lynx/lynx/app"
+	"github.com/go-lynx/lynx"
 	_ "github.com/go-lynx/lynx/plugins/polaris"
 	"github.com/google/wire"
 )
@@ -10,6 +10,6 @@ import (
 var ProviderSet = wire.NewSet(
 	NewGRPCServer,
 	NewHTTPServer,
-	app.GetServiceRegistry,
-	app.GetServiceDiscovery,
+	lynx.GetServiceRegistry,
+	lynx.GetServiceDiscovery,
 )

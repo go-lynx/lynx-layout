@@ -5,7 +5,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
-	"github.com/go-lynx/lynx/app/log"
+	"github.com/go-lynx/lynx/log"
 	lynxRedis "github.com/go-lynx/lynx/plugins/nosql/redis"
 	lynxPgsql "github.com/go-lynx/lynx/plugins/sql/pgsql"
 	_ "github.com/go-lynx/lynx/plugins/tracer"
