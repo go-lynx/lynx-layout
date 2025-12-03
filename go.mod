@@ -4,11 +4,11 @@ go 1.25.3
 
 require (
 	entgo.io/ent v0.14.5
-	github.com/go-kratos/kratos/v2 v2.8.4
+	github.com/go-kratos/kratos/v2 v2.9.1
 	github.com/go-lynx/lynx v1.2.3
 	github.com/go-lynx/lynx-layout/api v0.0.0-20231226093010-b62a1b27588b
-	github.com/go-lynx/lynx/plugins/nosql/redis v0.0.0
-	github.com/go-lynx/lynx/plugins/polaris v0.0.0
+	github.com/go-lynx/lynx/plugins/nosql/redis v1.2.3
+	github.com/go-lynx/lynx/plugins/polaris v1.2.3
 	github.com/go-lynx/lynx/plugins/service/grpc v0.0.0
 	github.com/go-lynx/lynx/plugins/service/http v0.0.0
 	github.com/go-lynx/lynx/plugins/sql/pgsql v0.0.0
@@ -16,7 +16,7 @@ require (
 	github.com/google/wire v0.7.0
 	github.com/redis/go-redis/v9 v9.12.1
 	go.uber.org/automaxprocs v1.5.1
-	google.golang.org/protobuf v1.36.6
+	google.golang.org/protobuf v1.36.10
 )
 
 require (
@@ -45,7 +45,7 @@ require (
 	github.com/go-lynx/lynx/plugins/sql/base v1.2.3 // indirect
 	github.com/go-lynx/lynx/plugins/sql/interfaces v1.2.3 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
-	github.com/go-playground/form/v4 v4.2.1 // indirect
+	github.com/go-playground/form/v4 v4.3.0 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/cel-go v0.24.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
@@ -96,7 +96,7 @@ require (
 	golang.org/x/exp v0.0.0-20250305212735-054e65f0b394 // indirect
 	golang.org/x/mod v0.26.0 // indirect
 	golang.org/x/net v0.43.0 // indirect
-	golang.org/x/sync v0.16.0 // indirect
+	golang.org/x/sync v0.18.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
