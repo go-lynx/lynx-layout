@@ -7,7 +7,7 @@ import (
 	"github.com/go-lynx/lynx-layout/api/login/code"
 	"github.com/go-lynx/lynx-layout/internal/bo"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
-	"github.com/go-lynx/lynx/app/utils/auth"
+	"github.com/go-lynx/lynx/pkg/auth"
 )
 
 // LoginUseCase defines user login related use cases, responsible for coordinating login business logic.
