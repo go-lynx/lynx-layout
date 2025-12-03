@@ -10,7 +10,6 @@ import (
 	lynxPgsql "github.com/go-lynx/lynx/plugins/sql/pgsql"
 	_ "github.com/go-lynx/lynx/plugins/tracer"
 	"github.com/google/wire"
-	"github.com/redis/go-redis/v9"
 )
 
 // ProviderSet is a Google Wire provider set used to define dependency injection rules.
