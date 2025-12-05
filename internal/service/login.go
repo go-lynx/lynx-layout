@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-lynx/lynx-layout/internal/biz"
 	"github.com/go-lynx/lynx-layout/internal/bo"
+	"github.com/go-lynx/lynx-redis-lock"
 	"github.com/go-lynx/lynx/log"
-	"github.com/go-lynx/lynx/plugins/nosql/redis/redislock"
 
 	v1 "github.com/go-lynx/lynx-layout/api/login/v1"
 )

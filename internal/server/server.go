@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/go-lynx/lynx"
-	_ "github.com/go-lynx/lynx/plugins/polaris"
 	"github.com/google/wire"
 )
 
