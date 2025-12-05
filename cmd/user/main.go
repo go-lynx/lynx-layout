@@ -6,7 +6,7 @@ import (
 
 // start the user service
 func main() {
-	err := boot.NewApplication(wireApp).Run()
+	err := boot.LynxApplication(wireApp).Run()
 	if err != nil {
 		panic(err)
 	}
