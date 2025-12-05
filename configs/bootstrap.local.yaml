@@ -5,20 +5,28 @@ lynx:
     version: v1.0.0
     close_banner: true
 
+  log:
+    level: info
+    console_output: true
+    format:
+      type: json
+      console_format: pretty
+      console_color: true
+
   http:
     network: tcp
-    addr: 0.0.0.0:8000
+    addr: 127.0.0.1:8000
     timeout: 5s
 
   grpc:
     service:
       network: tcp
-      addr: 0.0.0.0:9000
+      addr: 127.0.0.1:9000
       timeout: 5s
 
-  pgsql:
-    driver: pgx
-    source: "postgres://lynx:lynx@127.0.0.1:5432/lynx?sslmode=disable"
+  mysql:
+    driver: mysql
+    dsn: "lynx:lynx123456@tcp(127.0.0.1:3306)/lynx_test?charset=utf8mb4&parseTime=True&loc=Local"
     min_conn: 1
     max_conn: 10
 
@@ -26,7 +34,10 @@ lynx:
     network: tcp
     addrs:
       - 127.0.0.1:6379
+    password: lynx123456
     db: 0
+    min_idle_conns: 5
+    max_active_conns: 20
     dial_timeout: 2s
     read_timeout: 2s
     write_timeout: 2s

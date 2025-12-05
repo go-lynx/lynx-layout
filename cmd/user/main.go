@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/go-lynx/lynx/boot"
-	_ "go.uber.org/automaxprocs"
 )
 
 // start the user service

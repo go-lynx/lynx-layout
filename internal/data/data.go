@@ -7,9 +7,10 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
 	"github.com/go-lynx/lynx/log"
 	lynxRedis "github.com/go-lynx/lynx/plugins/nosql/redis"
-	lynxPgsql "github.com/go-lynx/lynx/plugins/sql/pgsql"
+	lynxMysql "github.com/go-lynx/lynx/plugins/sql/mysql"
 	_ "github.com/go-lynx/lynx/plugins/tracer"
 	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
 )
 
 // ProviderSet is a Google Wire provider set used to define dependency injection rules.
@@ -17,7 +18,7 @@ import (
 var ProviderSet = wire.NewSet(
 	NewData,
 	NewLoginRepo,
-	lynxPgsql.GetDriver,
+	lynxMysql.GetDriver,
 	lynxRedis.GetRedis,
 )
 
