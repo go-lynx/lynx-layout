@@ -26,7 +26,7 @@ lynx:
 
   mysql:
     driver: mysql
-    dsn: "lynx:lynx123456@tcp(127.0.0.1:3306)/lynx_test?charset=utf8mb4&parseTime=True&loc=Local"
+    source: "lynx:lynx123456@tcp(127.0.0.1:3306)/lynx_test?charset=utf8mb4&parseTime=True&loc=Local"
     min_conn: 10
     max_conn: 10
 
