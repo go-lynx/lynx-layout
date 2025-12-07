@@ -5,14 +5,14 @@ go 1.25.3
 require (
 	entgo.io/ent v0.14.5
 	github.com/go-kratos/kratos/v2 v2.9.1
-	github.com/go-lynx/lynx v1.2.3
+	github.com/go-lynx/lynx v1.5.0
+	github.com/go-lynx/lynx-grpc v1.5.0
+	github.com/go-lynx/lynx-http v1.5.0
 	github.com/go-lynx/lynx-layout/api v0.0.0-20231226093010-b62a1b27588b
-	github.com/go-lynx/lynx-redis-lock v0.0.0-00010101000000-000000000000
-	github.com/go-lynx/lynx/plugins/nosql/redis v1.2.3
-	github.com/go-lynx/lynx/plugins/service/grpc v0.0.0
-	github.com/go-lynx/lynx/plugins/service/http v0.0.0
-	github.com/go-lynx/lynx/plugins/sql/mysql v1.2.3
-	github.com/go-lynx/lynx/plugins/tracer v0.0.0
+	github.com/go-lynx/lynx-mysql v1.5.0
+	github.com/go-lynx/lynx-redis v1.5.0
+	github.com/go-lynx/lynx-redis-lock v1.5.0
+	github.com/go-lynx/lynx-tracer v1.5.0
 	github.com/google/wire v0.7.0
 	github.com/redis/go-redis/v9 v9.12.1
 	google.golang.org/protobuf v1.36.10
@@ -40,12 +40,7 @@ require (
 	github.com/go-kratos/kratos/contrib/middleware/validate/v2 v2.0.0-20250527152916-d6f5f00cf562 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-lynx/lynx-grpc v0.0.0-20251203083842-8905307f15ca // indirect
-	github.com/go-lynx/lynx-http v0.0.0-20251203083843-8a2288bc4e05 // indirect
-	github.com/go-lynx/lynx-mysql v1.5.0-beta.0.20251203083842-b8c6df641e0c // indirect
-	github.com/go-lynx/lynx-redis v0.0.0-20251203081205-3fda3886d626 // indirect
-	github.com/go-lynx/lynx-sql-sdk v0.0.0-00010101000000-000000000000 // indirect
-	github.com/go-lynx/lynx-tracer v0.0.0-20251203081201-c2c6c0c3cad5 // indirect
+	github.com/go-lynx/lynx-sql-sdk v1.5.0 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/go-playground/form/v4 v4.3.0 // indirect
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
@@ -95,20 +90,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-exclude github.com/go-lynx/lynx-mysql v1.5.0-beta
-
-exclude github.com/go-lynx/lynx-sql-sdk v1.5.0-beta
-
-replace (
-	github.com/go-lynx/lynx => ../lynx
-	github.com/go-lynx/lynx-layout/api => ./api
-	github.com/go-lynx/lynx-redis-lock => ../lynx-redis-lock
-	github.com/go-lynx/lynx-sql-sdk => ../lynx-sql-sdk
-	github.com/go-lynx/lynx/plugins/nosql/redis => ../lynx-redis
-	github.com/go-lynx/lynx/plugins/nosql/redis/redislock => ../lynx-redis-lock
-	github.com/go-lynx/lynx/plugins/polaris => ../lynx-polaris
-	github.com/go-lynx/lynx/plugins/service/grpc => ../lynx-grpc
-	github.com/go-lynx/lynx/plugins/service/http => ../lynx-http
-	github.com/go-lynx/lynx/plugins/sql/mysql => ../lynx-mysql
-	github.com/go-lynx/lynx/plugins/tracer => ../lynx-tracer
-)
+replace github.com/go-lynx/lynx-layout/api => ./api

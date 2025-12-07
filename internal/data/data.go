@@ -5,10 +5,10 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
+	lynxMysql "github.com/go-lynx/lynx-mysql"
+	lynxRedis "github.com/go-lynx/lynx-redis"
+	_ "github.com/go-lynx/lynx-tracer"
 	"github.com/go-lynx/lynx/log"
-	lynxRedis "github.com/go-lynx/lynx/plugins/nosql/redis"
-	lynxMysql "github.com/go-lynx/lynx/plugins/sql/mysql"
-	_ "github.com/go-lynx/lynx/plugins/tracer"
 	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
 )
