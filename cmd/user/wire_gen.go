@@ -18,8 +18,8 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/data"
 	"github.com/go-lynx/lynx-layout/internal/server"
 	"github.com/go-lynx/lynx-layout/internal/service"
-	"github.com/go-lynx/lynx/plugins/nosql/redis"
-	"github.com/go-lynx/lynx/plugins/sql/mysql"
+	mysql "github.com/go-lynx/lynx-mysql"
+	redis "github.com/go-lynx/lynx-redis"
 )
 
 // Injectors from wire.go:
