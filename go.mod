@@ -6,13 +6,13 @@ require (
 	entgo.io/ent v0.14.5
 	github.com/go-kratos/kratos/v2 v2.9.1
 	github.com/go-lynx/lynx v1.5.4
-	github.com/go-lynx/lynx-grpc v1.5.0
-	github.com/go-lynx/lynx-http v1.5.0
+	github.com/go-lynx/lynx-grpc v1.5.4
+	github.com/go-lynx/lynx-http v1.5.4
 	github.com/go-lynx/lynx-layout/api v0.0.0-20231226093010-b62a1b27588b
-	github.com/go-lynx/lynx-mysql v1.5.0
-	github.com/go-lynx/lynx-redis v1.5.0
-	github.com/go-lynx/lynx-redis-lock v1.5.0
-	github.com/go-lynx/lynx-tracer v1.5.0
+	github.com/go-lynx/lynx-mysql v1.5.4
+	github.com/go-lynx/lynx-redis v1.5.4
+	github.com/go-lynx/lynx-redis-lock v1.5.4
+	github.com/go-lynx/lynx-tracer v1.5.4
 	github.com/google/wire v0.7.0
 	github.com/redis/go-redis/v9 v9.12.1
 	google.golang.org/protobuf v1.36.10
