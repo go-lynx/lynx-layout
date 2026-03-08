@@ -5,7 +5,7 @@ Public protobufs live in `api/` (HTTP, gRPC, and OpenAPI stubs are generated in-
 
 ## Build, Test, and Development Commands
 - `make init` sets up the Lynx CLI plus proto and Wire generators; run once per machine.
-- `make api`, `make config`, and `make validate` regenerate protobufs; commit both the `.proto` and generated Go/openapi artifacts.
+- `make api`, `make config`, and `make validate` regenerate protobufs; commit both the `.proto` and generated Go artifacts. OpenAPI from `make api` is written to `docs/` (e.g. `docs/openapi.yaml`) for use with lynx-swagger; point swagger `spec_files` and `output_path` to the same file to get one merged doc.
 - `make build` (or `go build ./...`) drops binaries into `bin/` with the current `git describe` version embedded.
 - `docker compose -f deployments/docker-compose.local.yml up -d` launches PostgreSQL/Redis for local runs; pair it with `go run ./cmd/user -conf ./configs/bootstrap.local.yaml`.
 - `make run` executes the full pipeline (proto generation + `kratos run`) when validating Polaris-backed environments.
