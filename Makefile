@@ -33,15 +33,16 @@ config:
 	       $(INTERNAL_PROTO_FILES)
 
 .PHONY: api
-# generate api proto
+# generate api proto (OpenAPI output to docs/openapi.yaml for use with lynx-swagger)
 api:
+	mkdir -p docs
 	protoc --proto_path=./api \
 	       --proto_path=./third_party \
  	       --go_out=paths=source_relative:./api \
  	       --go-http_out=paths=source_relative:./api \
  	       --go-grpc_out=paths=source_relative:./api \
-	       --openapi_out=fq_schema_naming=true,default_response=false:. \
-	       $(API_PROTO_FILES)
+	       --openapi_out=fq_schema_naming=true,default_response=false:./docs \
+ 	       $(API_PROTO_FILES)
 
 
 .PHONY: validate
