@@ -91,3 +91,11 @@ require (
 )
 
 replace github.com/go-lynx/lynx-layout/api => ./api
+replace github.com/go-lynx/lynx => ../lynx
+replace github.com/go-lynx/lynx-grpc => ../lynx-grpc
+replace github.com/go-lynx/lynx-http => ../lynx-http
+replace github.com/go-lynx/lynx-mysql => ../lynx-mysql
+replace github.com/go-lynx/lynx-redis => ../lynx-redis
+replace github.com/go-lynx/lynx-redis-lock => ../lynx-redis-lock
+replace github.com/go-lynx/lynx-sql-sdk => ../lynx-sql-sdk
+replace github.com/go-lynx/lynx-tracer => ../lynx-tracer

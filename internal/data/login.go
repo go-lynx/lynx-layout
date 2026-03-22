@@ -29,8 +29,12 @@ func NewLoginRepo(data *Data) biz.LoginRepo {
 // Parameters: ctx is the context for controlling the request lifecycle; account is the user's login account.
 // Returns user business object pointer and any possible errors.
 func (r *loginRepo) FindUserByAccount(ctx context.Context, account string) (*bo.UserBO, error) {
+	client, err := r.data.entClient()
+	if err != nil {
+		return nil, err
+	}
 	// Use ent client to query database and find unique user based on account
-	u, err := r.data.db.User.
+	u, err := client.User.
 		Query().
 		Where(user.AccountEQ(account)).
 		Only(ctx)
@@ -54,8 +58,12 @@ func (r *loginRepo) FindUserByAccount(ctx context.Context, account string) (*bo.
 // Parameters: ctx is the context for controlling the request lifecycle; bo is the user business object.
 // Returns any possible errors.
 func (r *loginRepo) UpdateUserLastLoginTime(ctx context.Context, bo *bo.UserBO) error {
+	client, err := r.data.entClient()
+	if err != nil {
+		return err
+	}
 	// Use ent client to update user's last login time in database
-	rows, err := r.data.db.User.
+	rows, err := client.User.
 		Update().
 		SetLastLoginAt(time.Now()).
 		Where(user.IDEQ(bo.Id)).

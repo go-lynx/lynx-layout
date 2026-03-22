@@ -13,7 +13,6 @@ import (
 	"github.com/go-lynx/lynx-layout/internal/data"
 	"github.com/go-lynx/lynx-layout/internal/server"
 	"github.com/go-lynx/lynx-layout/internal/service"
-	"github.com/go-lynx/lynx-mysql"
 	"github.com/go-lynx/lynx-redis"
 	kratos2 "github.com/go-lynx/lynx/kratos"
 )
@@ -22,12 +21,9 @@ import (
 
 // wireApp init kratos application.
 func wireApp() (*kratos.App, error) {
-	driver, err := mysql.GetDriver()
-	if err != nil {
-		return nil, err
-	}
+	entClientProvider := data.NewEntClientProvider()
 	client := redis.GetRedis()
-	dataData, err := data.NewData(driver, client)
+	dataData, err := data.NewData(entClientProvider, client)
 	if err != nil {
 		return nil, err
 	}
