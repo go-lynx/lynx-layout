@@ -7,6 +7,7 @@ package main
 
 import (
 	"github.com/go-kratos/kratos/v2"
+	"github.com/go-lynx/lynx"
 	lynxkratos "github.com/go-lynx/lynx/kratos"
 
 	"github.com/go-lynx/lynx-layout/internal/biz"
@@ -24,6 +25,7 @@ func wireApp() (*kratos.App, error) {
 			data.ProviderSet,
 			biz.ProviderSet,
 			service.ProviderSet,
+			lynx.Lynx,
 			lynxkratos.ProvideKratosOptions,
 			lynxkratos.NewKratos,
 		),
