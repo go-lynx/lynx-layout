@@ -36,7 +36,8 @@ func wireApp() (*kratos.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	options := kratos2.ProvideKratosOptions(grpcServer, httpServer, registrar)
+	lynxApp := lynx.Lynx()
+	options := kratos2.ProvideKratosOptions(lynxApp, grpcServer, httpServer, registrar)
 	app, err := kratos2.NewKratos(options)
 	if err != nil {
 		return nil, err
