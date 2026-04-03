@@ -80,11 +80,10 @@ func (r *loginRepo) UpdateUserLastLoginTime(ctx context.Context, bo *bo.UserBO) 
 	return nil
 }
 
-// LoginAuth performs user login authentication and generates authentication token.
-// Currently this method is in TODO status, planned to be implemented via gRPC remote calls to other microservices.
+// LoginAuth performs user login authentication and generates an authentication token.
+// Token issuance is delegated to an optional external gRPC auth service when the related config is provided.
 // Parameters: ctx is the context for controlling the request lifecycle; bo is the user business object.
 // Returns authentication token string and any possible errors.
 func (r *loginRepo) LoginAuth(ctx context.Context, bo *bo.UserBO) (string, error) {
-	// TODO Remote invocation of other microservices via gRPC
-	return "", nil
+	return r.issueLoginAuthToken(ctx, bo)
 }

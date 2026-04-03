@@ -1,0 +1,73 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: Login API
+    description: Define Login service containing user login related RPC methods
+    version: 0.0.1
+paths:
+    /login:
+        post:
+            tags:
+                - Login
+            description: Define Login RPC method that receives LoginRequest message and returns LoginReply message
+            operationId: Login_Login
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/layout.login.v1.LoginRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/layout.login.v1.LoginReply'
+components:
+    schemas:
+        layout.login.v1.LoginReply:
+            type: object
+            properties:
+                token:
+                    type: string
+                    description: Authentication token field, field number 1
+                user:
+                    allOf:
+                        - $ref: '#/components/schemas/layout.login.v1.UserInfo'
+                    description: User information field, field number 2
+            description: Define login response message
+        layout.login.v1.LoginRequest:
+            type: object
+            properties:
+                account:
+                    type: string
+                    description: |-
+                        User account field, field number 1
+                         Use validate rules to validate account length, minimum length 5, maximum length 32
+                password:
+                    type: string
+                    description: |-
+                        User password field, field number 2
+                         Use validate rules to validate password length, minimum length 8, maximum length 32
+            description: Define login request message
+        layout.login.v1.UserInfo:
+            type: object
+            properties:
+                num:
+                    type: string
+                    description: User number field, field number 1
+                account:
+                    type: string
+                    description: User account field, field number 2
+                nickName:
+                    type: string
+                    description: User nickname field, field number 3
+                avatar:
+                    type: string
+                    description: User avatar URL field, field number 4
+            description: Define user information message
+tags:
+    - name: Login
