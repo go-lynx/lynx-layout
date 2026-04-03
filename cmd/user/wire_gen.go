@@ -21,6 +21,7 @@ import (
 
 // wireApp init kratos application.
 func wireApp() (*kratos.App, error) {
+	lynxApp := lynx.Lynx()
 	entClientProvider := data.NewEntClientProvider()
 	client := redis.GetRedis()
 	dataData, err := data.NewData(entClientProvider, client)
@@ -30,13 +31,18 @@ func wireApp() (*kratos.App, error) {
 	loginRepo := data.NewLoginRepo(dataData)
 	loginUseCase := biz.NewLoginUseCase(loginRepo)
 	loginService := service.NewLoginService(loginUseCase)
-	grpcServer := server.NewGRPCServer(loginService)
-	httpServer := server.NewHTTPServer(loginService)
+	grpcServer, err := server.NewGRPCServer(loginService)
+	if err != nil {
+		return nil, err
+	}
+	httpServer, err := server.NewHTTPServer(loginService)
+	if err != nil {
+		return nil, err
+	}
 	registrar, err := lynx.GetServiceRegistry()
 	if err != nil {
 		return nil, err
 	}
-	lynxApp := lynx.Lynx()
 	options := kratos2.ProvideKratosOptions(lynxApp, grpcServer, httpServer, registrar)
 	app, err := kratos2.NewKratos(options)
 	if err != nil {

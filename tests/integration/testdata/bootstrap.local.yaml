@@ -1,0 +1,27 @@
+lynx:
+  # This fixture mirrors configs/bootstrap.local.yaml for the dependency fields
+  # used by integration helpers. Non-endpoint sections are intentionally omitted
+  # because this file is only for local config loading and address normalization.
+  grpc:
+    service:
+      network: tcp
+      addr: 127.0.0.1:9000
+      timeout: 5s
+
+  mysql:
+    driver: mysql
+    source: "lynx:lynx123456@tcp(127.0.0.1:3306)/lynx_test?charset=utf8mb4&parseTime=True&loc=Local"
+    # Use smaller pool sizes than the real local bootstrap config to keep test
+    # fixture defaults lightweight while preserving the same DSN shape.
+    min_conn: 1
+    max_conn: 4
+
+  redis:
+    network: tcp
+    addrs:
+      - 127.0.0.1:6379
+    password: lynx123456
+    db: 0
+    dial_timeout: 2s
+    read_timeout: 2s
+    write_timeout: 2s
