@@ -79,11 +79,11 @@ We hope this guide helps you navigate our Microservice Template Project. Happy c
    make init
    ```
    `make init` 会安装 `lynx`、`protoc-gen-go`、`protoc-gen-go-grpc` 和 `protoc-gen-openapi`。如果只直接执行 `go run`，且本地已经有可用的生成物，可以跳过这一步。
-3. **启动本地依赖（PostgreSQL & Redis）**
+3. **启动本地依赖（MySQL & Redis）**
    ```bash
    docker compose -f deployments/docker-compose.local.yml up -d
    ```
-   该 compose 文件会启动 `postgres://lynx:lynx@127.0.0.1:5432/lynx` 与 `redis://127.0.0.1:6379`，并自动暴露到本机端口。
+   该 compose 文件会启动 `mysql://lynx:lynx123456@tcp(127.0.0.1:3306)/lynx_test` 与 `redis://127.0.0.1:6379`，并自动暴露到本机端口。
 4. **按需重新生成 Wire 依赖注入代码**
    ```bash
    make wire
@@ -93,7 +93,7 @@ We hope this guide helps you navigate our Microservice Template Project. Happy c
    ```bash
    go run ./cmd/user -conf ./configs/bootstrap.local.yaml
    ```
-   如果你有自己的数据库/Redis，可以修改 `configs/bootstrap.local.yaml` 中的 `lynx.mysql` 与 `lynx.redis` 配置。注意：仓库当前 `deployments/docker-compose.local.yml` 启动的是 PostgreSQL 与 Redis，而 `bootstrap.local.yaml` 默认示例使用的是 MySQL；本地运行前请按你的实际依赖把二者对齐。
+   如果你有自己的数据库/Redis，可以修改 `configs/bootstrap.local.yaml` 中的 `lynx.mysql` 与 `lynx.redis` 配置。仓库当前的 `deployments/docker-compose.local.yml` 已与默认示例对齐，直接使用即可跑通本地 MySQL + Redis 依赖。
 6. **调试完成后关闭依赖**
    ```bash
    docker compose -f deployments/docker-compose.local.yml down
