@@ -3,6 +3,8 @@ lynx:
     name: user-service
     version: v1.0.0
     close_banner: false
+  # Polaris-backed environments still rely on the same cmd/user explicit bootstrap
+  # path; the difference is only where runtime config is sourced from.
   polaris:
     config_path: "configs/polaris.yaml"
     namespace: demo

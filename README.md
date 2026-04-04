@@ -55,13 +55,28 @@ To get your microservice up and running in no time, use the following code (Some
 
 ```go
 func main() {
-    boot.LynxApplication(wireApp).Run()
+    boot.NewApplication(wireApp).Run()
 }
 ```
 
 This code initializes and runs the application with essential components like HTTP, gRPC with TLS, MySQL, Redis, Tracer, and Token.
 
 仓库当前通过 `make wire` 自动发现 `cmd/**/wire.go` 所在目录，并逐个执行 Wire 生成依赖注入代码。本地开发如果修改了 Wire provider / injector，或首次需要补齐依赖注入生成物，可以先执行 `make wire`，然后再运行应用或执行构建命令；`make build` 也会隐式先执行这一步。
+
+## Bootstrap 装配约定
+
+当前模板把运行时装配边界固定在 [`cmd/user/plugins.go`](./cmd/user/plugins.go) 与 [`cmd/user/providers.go`](./cmd/user/providers.go)：
+
+- `plugins.go` 是唯一的 side-effect 插件注册清单，集中声明 HTTP、gRPC、MySQL、Redis、Redis Lock、Tracer 等运行时插件。
+- `providers.go` 负责把 Lynx runtime 中已经加载好的 app、config、service registrar、HTTP/gRPC server、MySQL provider、Redis provider facade 显式导出给 Wire。
+- `internal/data`、`internal/server`、`internal/service` 不再直接读取 `lynx.Lynx()` 或插件 helper，模板内部层只消费显式注入的依赖。
+
+这意味着模板的装配链路已经固定为：
+
+1. `boot.NewApplication(wireApp)` 创建 boot shell；
+2. shell 完成 Lynx app 初始化并加载插件；
+3. `wireApp` 从 `cmd/user` provider 层显式提取 runtime 依赖；
+4. `internal/*` 只接收已经准备好的 provider / transport / config。
 
 We hope this guide helps you navigate our Microservice Template Project. Happy coding! 🎉
 
@@ -83,23 +98,84 @@ We hope this guide helps you navigate our Microservice Template Project. Happy c
    ```bash
    docker compose -f deployments/docker-compose.local.yml up -d
    ```
-   该 compose 文件会启动 `mysql://lynx:lynx123456@tcp(127.0.0.1:3306)/lynx_test` 与 `redis://127.0.0.1:6379`，并自动暴露到本机端口。
+   该 compose 文件会启动 `mysql://lynx:lynx123456@tcp(127.0.0.1:3306)/lynx_test` 与无密码的 `redis://127.0.0.1:6379`，并自动暴露到本机端口。
 4. **按需重新生成 Wire 依赖注入代码**
    ```bash
    make wire
    ```
    这个目标会自动发现 `cmd/**/wire.go` 所在目录，并在每个目录下执行 `go run -mod=mod github.com/google/wire/cmd/wire`，直接复用仓库当前 `go.mod` 中锁定的 Wire 版本，不要求本机单独安装 `wire` 二进制。
+   如果你修改了 [`cmd/user/plugins.go`](./cmd/user/plugins.go) 或 [`cmd/user/providers.go`](./cmd/user/providers.go)，也需要重新执行这一步，确保显式装配代码与 `wire_gen.go` 保持一致。
 5. **使用本地配置启动应用**（该配置不会加载 Polaris）
    ```bash
    go run ./cmd/user -conf ./configs/bootstrap.local.yaml
    ```
-   如果你有自己的数据库/Redis，可以修改 `configs/bootstrap.local.yaml` 中的 `lynx.mysql` 与 `lynx.redis` 配置。仓库当前的 `deployments/docker-compose.local.yml` 已与默认示例对齐，直接使用即可跑通本地 MySQL + Redis 依赖。
+   如果你有自己的数据库/Redis，可以修改 `configs/bootstrap.local.yaml` 中的 `lynx.mysql` 与 `lynx.redis` 配置。仓库当前的 `deployments/docker-compose.local.yml` 已与默认示例对齐，直接使用即可跑通本地 MySQL + Redis 依赖；默认 Redis 示例不带密码，如果你切换到带密码实例，需要同时更新 `lynx.redis.password`。模板运行期会通过 `cmd/user/providers.go` 显式拿到 MySQL provider、Redis provider facade、HTTP/gRPC server 和 service registrar。
 6. **调试完成后关闭依赖**
    ```bash
    docker compose -f deployments/docker-compose.local.yml down
    ```
 
 默认的 `configs/bootstrap.yaml` 仍然保留对 Polaris 的配置，方便需要接入 Polaris 的环境使用。
+
+## 生产使用说明
+
+### 1. Local bootstrap 合同
+
+模板当前把本地无 control-plane 的运行合同固定在 4 个文件上：
+
+- `configs/bootstrap.local.yaml`
+- `tests/integration/testdata/bootstrap.local.yaml`
+- `deployments/docker-compose.local.yml`
+- `cmd/user/providers.go`
+
+这 4 处需要保持同一口径：
+
+- 本地链路默认不接 Polaris / Apollo / Nacos / Etcd 等 control plane。
+- Redis 默认使用无密码的 `127.0.0.1:6379`。
+- `provideServiceRegistrar()` 在 no-control-plane 路径下返回 `nil, nil` 是合法结果，不应该被模板层当成启动失败。
+- 模板业务层只消费显式注入的 provider / transport，不回退到 `internal/*` 里直接读取全局 app。
+
+如果你修改了本地 MySQL / Redis / gRPC 地址或鉴权配置，请同时同步 bootstrap、integration fixture 与 README，避免文档、测试夹具和本地 compose 口径漂移。
+
+### 2. 本地冒烟前置条件
+
+本地冒烟链路仍然是：
+
+```bash
+docker compose -f deployments/docker-compose.local.yml up -d
+go run ./cmd/user -conf ./configs/bootstrap.local.yaml
+```
+
+但这条链路依赖本机 Docker daemon 先可用。如果执行 `docker version` 或 `docker compose` 时出现 `Cannot connect to the Docker daemon`，这是环境阻塞，不是模板代码失败；需要先把 Docker Desktop / daemon 拉起，再继续做本地启动冒烟。
+
+### 3. no-control-plane 合法路径
+
+模板已经验证过 local no-control-plane 路径：
+
+- `boot.NewApplication(wireApp)` 负责发布默认 app，并把 runtime shell 挂到 Lynx core。
+- `cmd/user/providers.go` 从已发布 app 中显式提取 config、MySQL provider、Redis provider facade、HTTP/gRPC server。
+- 没有 control plane 时，service registrar 可以为 `nil`；Kratos 应用仍可正常完成本地启动，不要求强制注册中心。
+
+这意味着 `bootstrap.local.yaml` 本身就是生产前的最小本地回归入口，不需要为了本地调试额外伪造注册中心。
+
+### 4. 与 transport readiness / resource alias 的边界
+
+任务12已经把 transport/message/transaction/observability 插件统一到了 `<plugin>.plugin`、`<plugin>.readiness`、`<plugin>.health` 等 runtime contract。模板侧本轮只读对照后的结论是：
+
+- `lynx-layout` 当前不直接消费这些 readiness / health / alias 资源。
+- 模板侧唯一需要的 transport 接口仍然是 `cmd/user/providers.go` 提供的 HTTP / gRPC base server，然后在 `internal/server` 完成业务路由注册。
+- 因此模板侧不需要为任务12再新增消费代码；真正的运行态健康判断应由 transport 插件自身的 runtime health / endpoint / readiness contract 提供。
+
+### 5. 最终交付口径
+
+当前模板侧可以直接向 owner 交付的说明口径如下：
+
+就 production 交付判断而言，当前模板已经收敛到一条稳定口径：运行时依赖通过显式 provider 装配进入模板，本地允许 no-control-plane 启动；如果 `docker compose` 无法拉起，则应先归因为 Docker daemon 环境阻塞，而不是把它判定为当前模板改造的代码 blocker。
+
+- 显式装配边界固定在 `cmd/user/plugins.go` 与 `cmd/user/providers.go`，其中 Redis 已统一为 provider facade 注入，不再把 raw client 作为模板单例依赖向下传递。
+- `configs/bootstrap.local.yaml` 代表标准 local no-control-plane 路径；`provideServiceRegistrar()` 返回 `nil, nil` 属于合法启动分支，不构成启动失败。
+- 本机无法执行 `docker compose ... && go run ...` 时，需要先排除 Docker daemon 环境阻塞；这属于环境问题，不属于当前模板代码 blocker。
+- transport readiness / health / alias 资源继续由插件运行时自身负责，模板只消费 HTTP / gRPC base server，不额外承担 transport control-plane/resource contract 的解释责任。
 
 ## 可选：接入外部登录鉴权 gRPC 服务
 

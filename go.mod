@@ -15,6 +15,7 @@ require (
 	github.com/go-lynx/lynx-sql-sdk v1.5.0
 	github.com/go-lynx/lynx-tracer v1.5.4
 	github.com/google/wire v0.7.0
+	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/redis/go-redis/v9 v9.12.1
 	github.com/stretchr/testify v1.11.1
 	google.golang.org/grpc v1.79.3

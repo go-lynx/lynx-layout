@@ -20,7 +20,7 @@ lynx:
     network: tcp
     addrs:
       - 127.0.0.1:6379
-    password: lynx123456
+    password: ""
     db: 0
     dial_timeout: 2s
     read_timeout: 2s
