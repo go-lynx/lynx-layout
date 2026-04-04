@@ -1,7 +1,6 @@
 package server
 
 import (
-	"errors"
 	"strings"
 	"testing"
 
@@ -13,24 +12,19 @@ import (
 )
 
 func TestNewGRPCServerRegistersService(t *testing.T) {
-	originalGetter := grpcServerGetter
 	originalRegister := registerLoginGRPCServer
 	t.Cleanup(func() {
-		grpcServerGetter = originalGetter
 		registerLoginGRPCServer = originalRegister
 	})
 
 	expectedServer := transportgrpc.NewServer()
 	registered := false
 
-	grpcServerGetter = func(any) (*transportgrpc.Server, error) {
-		return expectedServer, nil
-	}
 	registerLoginGRPCServer = func(registrar grpc.ServiceRegistrar, srv loginV1.LoginServer) {
 		registered = true
 	}
 
-	got, err := NewGRPCServer(service.NewLoginService(nil))
+	got, err := NewGRPCServer(GRPCServerBase{Server: expectedServer}, service.NewLoginService(nil, nil))
 	if err != nil {
 		t.Fatalf("expected grpc server, got error: %v", err)
 	}
@@ -42,53 +36,29 @@ func TestNewGRPCServerRegistersService(t *testing.T) {
 	}
 }
 
-func TestNewGRPCServerConvertsPanicToError(t *testing.T) {
-	originalGetter := grpcServerGetter
-	t.Cleanup(func() {
-		grpcServerGetter = originalGetter
-	})
-
-	grpcServerGetter = func(any) (*transportgrpc.Server, error) {
-		panic("grpc getter panic")
-	}
-
-	if _, err := NewGRPCServer(service.NewLoginService(nil)); err == nil || !strings.Contains(err.Error(), "grpc getter panic") {
-		t.Fatalf("expected panic to be converted into error, got %v", err)
+func TestNewGRPCServerRejectsNilBaseServer(t *testing.T) {
+	if _, err := NewGRPCServer(GRPCServerBase{}, service.NewLoginService(nil, nil)); err == nil || !strings.Contains(err.Error(), "gRPC 服务实例为空") {
+		t.Fatalf("expected nil base server error, got %v", err)
 	}
 }
 
-func TestNewHTTPServerReturnsGetterError(t *testing.T) {
-	originalGetter := httpServerGetter
-	t.Cleanup(func() {
-		httpServerGetter = originalGetter
-	})
-
-	expectedErr := errors.New("http getter failed")
-	httpServerGetter = func() (*transporthttp.Server, error) {
-		return nil, expectedErr
-	}
-
-	if _, err := NewHTTPServer(service.NewLoginService(nil)); !errors.Is(err, expectedErr) {
-		t.Fatalf("expected getter error, got %v", err)
+func TestNewHTTPServerRejectsNilBaseServer(t *testing.T) {
+	if _, err := NewHTTPServer(HTTPServerBase{}, service.NewLoginService(nil, nil)); err == nil || !strings.Contains(err.Error(), "HTTP 服务实例为空") {
+		t.Fatalf("expected nil base server error, got %v", err)
 	}
 }
 
 func TestNewHTTPServerConvertsRegisterPanicToError(t *testing.T) {
-	originalGetter := httpServerGetter
 	originalRegister := registerLoginHTTPServer
 	t.Cleanup(func() {
-		httpServerGetter = originalGetter
 		registerLoginHTTPServer = originalRegister
 	})
 
-	httpServerGetter = func() (*transporthttp.Server, error) {
-		return transporthttp.NewServer(), nil
-	}
 	registerLoginHTTPServer = func(*transporthttp.Server, loginV1.LoginHTTPServer) {
 		panic("http register panic")
 	}
 
-	if _, err := NewHTTPServer(service.NewLoginService(nil)); err == nil || !strings.Contains(err.Error(), "http register panic") {
+	if _, err := NewHTTPServer(HTTPServerBase{Server: transporthttp.NewServer()}, service.NewLoginService(nil, nil)); err == nil || !strings.Contains(err.Error(), "http register panic") {
 		t.Fatalf("expected register panic to be converted into error, got %v", err)
 	}
 }

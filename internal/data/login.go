@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/go-lynx/lynx-layout/api/login/code"
@@ -13,15 +14,17 @@ import (
 // loginRepo implements the biz.LoginRepo interface for handling user login related data operations.
 // Contains data access instance and logging helper tools.
 type loginRepo struct {
-	data *Data // Data access instance containing database and Redis clients
+	data      *Data // Data access instance containing the stable database provider wiring
+	loginAuth LoginAuthTokenIssuer
 }
 
 // NewLoginRepo creates a new loginRepo instance that implements the biz.LoginRepo interface.
 // Parameter data is the data access instance, logger is the logger.
 // Returns a pointer that implements the biz.LoginRepo interface.
-func NewLoginRepo(data *Data) biz.LoginRepo {
+func NewLoginRepo(data *Data, loginAuth LoginAuthTokenIssuer) biz.LoginRepo {
 	return &loginRepo{
-		data: data,
+		data:      data,
+		loginAuth: loginAuth,
 	}
 }
 
@@ -85,5 +88,8 @@ func (r *loginRepo) UpdateUserLastLoginTime(ctx context.Context, bo *bo.UserBO) 
 // Parameters: ctx is the context for controlling the request lifecycle; bo is the user business object.
 // Returns authentication token string and any possible errors.
 func (r *loginRepo) LoginAuth(ctx context.Context, bo *bo.UserBO) (string, error) {
-	return r.issueLoginAuthToken(ctx, bo)
+	if r.loginAuth == nil {
+		return "", fmt.Errorf("login auth token issuer is nil")
+	}
+	return r.loginAuth(ctx, bo)
 }

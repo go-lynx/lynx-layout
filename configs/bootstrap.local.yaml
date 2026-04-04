@@ -1,4 +1,6 @@
-# Local-only bootstrap configuration that avoids Polaris
+# Local-only bootstrap configuration that avoids Polaris and other control-plane registries.
+# Runtime plugins are declared in cmd/user/plugins.go and assembled in cmd/user/providers.go.
+# The default docker-compose local path expects passwordless Redis at 127.0.0.1:6379.
 lynx:
   application:
     name: user-service
@@ -34,10 +36,18 @@ lynx:
     network: tcp
     addrs:
       - 127.0.0.1:6379
-    password: lynx123456
+    password: ""
     db: 0
     min_idle_conns: 5
     max_active_conns: 20
     dial_timeout: 2s
     read_timeout: 2s
     write_timeout: 2s
+
+  # Optional external auth service used by internal/data/login_auth.go.
+  # layout:
+  #   auth:
+  #     grpc:
+  #       service: auth-service
+  #       method: /layout.auth.v1.AuthService/IssueLoginToken
+  #       timeout: 5s

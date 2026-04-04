@@ -8,38 +8,70 @@ package main
 
 import (
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-lynx/lynx"
 	"github.com/go-lynx/lynx-layout/internal/biz"
 	"github.com/go-lynx/lynx-layout/internal/data"
 	"github.com/go-lynx/lynx-layout/internal/server"
 	"github.com/go-lynx/lynx-layout/internal/service"
-	"github.com/go-lynx/lynx-redis"
 	kratos2 "github.com/go-lynx/lynx/kratos"
+)
+
+import (
+	_ "github.com/go-lynx/lynx-grpc"
+	_ "github.com/go-lynx/lynx-http"
+	_ "github.com/go-lynx/lynx-mysql"
+	_ "github.com/go-lynx/lynx-redis"
+	_ "github.com/go-lynx/lynx-redis-lock"
+	_ "github.com/go-lynx/lynx-tracer"
 )
 
 // Injectors from wire.go:
 
 // wireApp init kratos application.
 func wireApp() (*kratos.App, error) {
-	lynxApp := lynx.Lynx()
-	entClientProvider := data.NewEntClientProvider()
-	client := redis.GetRedis()
-	dataData, err := data.NewData(entClientProvider, client)
+	lynxApp, err := provideLynxApp()
 	if err != nil {
 		return nil, err
 	}
-	loginRepo := data.NewLoginRepo(dataData)
+	grpcServerBase, err := provideGRPCServerBase(lynxApp)
+	if err != nil {
+		return nil, err
+	}
+	dbProvider, err := provideDBProvider()
+	if err != nil {
+		return nil, err
+	}
+	entClientProvider := provideEntClientProvider(dbProvider)
+	provider, err := provideRedisProvider()
+	if err != nil {
+		return nil, err
+	}
+	dataData, err := data.NewData(entClientProvider, provider)
+	if err != nil {
+		return nil, err
+	}
+	config, err := provideRuntimeConfig(lynxApp)
+	if err != nil {
+		return nil, err
+	}
+	grpcClientConnectionGetter := provideGRPCClientConnectionGetter(lynxApp)
+	loginAuthTokenIssuer := data.NewLoginAuthTokenIssuer(config, grpcClientConnectionGetter)
+	loginRepo := data.NewLoginRepo(dataData, loginAuthTokenIssuer)
 	loginUseCase := biz.NewLoginUseCase(loginRepo)
-	loginService := service.NewLoginService(loginUseCase)
-	grpcServer, err := server.NewGRPCServer(loginService)
+	lockRunner := provideLoginLockRunner()
+	loginService := service.NewLoginService(loginUseCase, lockRunner)
+	grpcServer, err := server.NewGRPCServer(grpcServerBase, loginService)
 	if err != nil {
 		return nil, err
 	}
-	httpServer, err := server.NewHTTPServer(loginService)
+	httpServerBase, err := provideHTTPServerBase()
 	if err != nil {
 		return nil, err
 	}
-	registrar, err := lynx.GetServiceRegistry()
+	httpServer, err := server.NewHTTPServer(httpServerBase, loginService)
+	if err != nil {
+		return nil, err
+	}
+	registrar, err := provideServiceRegistrar(lynxApp)
 	if err != nil {
 		return nil, err
 	}

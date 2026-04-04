@@ -8,9 +8,8 @@ import (
 	"time"
 
 	"github.com/go-kratos/kratos/v2/config"
-	"github.com/go-lynx/lynx"
-	lynxgrpc "github.com/go-lynx/lynx-grpc"
 	"github.com/go-lynx/lynx-layout/internal/bo"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -26,7 +25,15 @@ const (
 	defaultLoginAuthTimeout = 5 * time.Second
 )
 
-var grpcClientConnectionGetter = lynxgrpc.GetGrpcClientConnection
+type GRPCClientConnectionGetter func(serviceName string) (*grpc.ClientConn, error)
+
+type LoginAuthTokenIssuer func(ctx context.Context, user *bo.UserBO) (string, error)
+
+func NewLoginAuthTokenIssuer(runtimeConfig config.Config, grpcClientConnectionGetter GRPCClientConnectionGetter) LoginAuthTokenIssuer {
+	return func(ctx context.Context, user *bo.UserBO) (string, error) {
+		return issueLoginAuthToken(ctx, user, runtimeConfig, grpcClientConnectionGetter)
+	}
+}
 
 type loginAuthConfig struct {
 	ServiceName string
@@ -34,12 +41,15 @@ type loginAuthConfig struct {
 	Timeout     time.Duration
 }
 
-func (r *loginRepo) issueLoginAuthToken(ctx context.Context, user *bo.UserBO) (string, error) {
+func issueLoginAuthToken(ctx context.Context, user *bo.UserBO, runtimeConfig config.Config, grpcClientConnectionGetter GRPCClientConnectionGetter) (string, error) {
 	if err := validateLoginAuthInput(ctx, user); err != nil {
 		return "", err
 	}
+	if grpcClientConnectionGetter == nil {
+		return "", fmt.Errorf("登录鉴权 gRPC 连接提供器不能为空")
+	}
 
-	authConfig, err := loadLoginAuthConfig()
+	authConfig, err := loadLoginAuthConfig(runtimeConfig)
 	if err != nil {
 		return "", err
 	}
@@ -49,7 +59,7 @@ func (r *loginRepo) issueLoginAuthToken(ctx context.Context, user *bo.UserBO) (s
 		defer cancel()
 	}
 
-	conn, err := grpcClientConnectionGetter(authConfig.ServiceName, nil)
+	conn, err := grpcClientConnectionGetter(authConfig.ServiceName)
 	if err != nil {
 		return "", fmt.Errorf("获取登录鉴权 gRPC 连接失败: %w", err)
 	}
@@ -92,8 +102,8 @@ func validateLoginAuthInput(ctx context.Context, user *bo.UserBO) error {
 	return nil
 }
 
-func loadLoginAuthConfig() (loginAuthConfig, error) {
-	return resolveLoginAuthConfig(currentLoginAuthRuntimeConfig(), os.Getenv)
+func loadLoginAuthConfig(runtimeConfig config.Config) (loginAuthConfig, error) {
+	return resolveLoginAuthConfig(runtimeConfig, os.Getenv)
 }
 
 func resolveLoginAuthConfig(runtimeConfig config.Config, lookupEnv func(string) string) (loginAuthConfig, error) {
@@ -137,22 +147,6 @@ func resolveLoginAuthConfig(runtimeConfig config.Config, lookupEnv func(string) 
 		return loginAuthConfig{}, fmt.Errorf("登录鉴权超时时间必须大于 0: %s", authConfig.Timeout)
 	}
 	return authConfig, nil
-}
-
-func currentLoginAuthRuntimeConfig() config.Config {
-	app := lynx.Lynx()
-	if app == nil {
-		return nil
-	}
-	pluginManager := app.GetPluginManager()
-	if pluginManager == nil {
-		return nil
-	}
-	runtime := pluginManager.GetRuntime()
-	if runtime == nil {
-		return nil
-	}
-	return runtime.GetConfig()
 }
 
 func readLoginAuthStringConfig(runtimeConfig config.Config, key string) (string, bool) {

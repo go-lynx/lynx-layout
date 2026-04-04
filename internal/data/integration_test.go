@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
+	lynxredis "github.com/go-lynx/lynx-redis"
 	"github.com/go-lynx/lynx-sql-sdk/interfaces"
 	"github.com/redis/go-redis/v9"
 )
@@ -21,13 +22,35 @@ type staticDBProvider struct {
 	dialect string
 }
 
-func (p *staticDBProvider) DB(_ context.Context) (*sql.DB, error)           { return p.db, nil }
+func (p *staticDBProvider) DB(_ context.Context) (*sql.DB, error) { return p.db, nil }
 func (p *staticDBProvider) ValidatedConn(ctx context.Context) (*sql.Conn, error) {
 	return p.db.Conn(ctx)
 }
 func (p *staticDBProvider) Dialect() string { return p.dialect }
 
 var _ interfaces.DBProvider = (*staticDBProvider)(nil)
+
+type staticRedisProvider struct {
+	client redis.UniversalClient
+}
+
+func (p staticRedisProvider) UniversalClient(context.Context) (redis.UniversalClient, error) {
+	return p.client, nil
+}
+
+func (p staticRedisProvider) SingleClient(context.Context) (*redis.Client, error) {
+	client, ok := p.client.(*redis.Client)
+	if !ok {
+		return nil, fmt.Errorf("redis client is not standalone")
+	}
+	return client, nil
+}
+
+func (p staticRedisProvider) Mode(context.Context) (string, error) {
+	return "standalone", nil
+}
+
+var _ lynxredis.Provider = staticRedisProvider{}
 
 // isMySQLAvailable returns true when a MySQL server is reachable on localhost:3306.
 func isMySQLAvailable() bool {
@@ -98,8 +121,8 @@ func newTestRedisClient(t *testing.T) *redis.Client {
 // ─── tests ────────────────────────────────────────────────────────────────────
 
 // TestCrossPlugin_DataLayerInitializesWithBothPlugins verifies that NewData
-// succeeds when a MySQL provider and a Redis client are both supplied, which
-// exercises the MySQL-plugin + Redis-plugin wiring path.
+// succeeds when a MySQL provider and a Redis provider facade are both supplied,
+// which exercises the MySQL-plugin + Redis-plugin wiring path.
 func TestCrossPlugin_DataLayerInitializesWithBothPlugins(t *testing.T) {
 	if !isMySQLAvailable() {
 		t.Skip("MySQL not available")
@@ -112,7 +135,7 @@ func TestCrossPlugin_DataLayerInitializesWithBothPlugins(t *testing.T) {
 	rdb := newTestRedisClient(t)
 
 	provider := &staticDBProvider{db: db, dialect: "mysql"}
-	d, err := NewData(NewEntClientProviderFromDB(provider), rdb)
+	d, err := NewData(NewEntClientProviderFromDB(provider), staticRedisProvider{client: rdb})
 	if err != nil {
 		t.Fatalf("NewData (MySQL+Redis): %v", err)
 	}
@@ -152,12 +175,12 @@ func TestCrossPlugin_MySQLWriteVisibleViaRedis(t *testing.T) {
 	t.Cleanup(func() { entClient.User.DeleteOneID(created.ID).Exec(ctx) }) //nolint:errcheck
 
 	provider := &staticDBProvider{db: db, dialect: "mysql"}
-	d, err := NewData(NewEntClientProviderFromDB(provider), rdb)
+	d, err := NewData(NewEntClientProviderFromDB(provider), staticRedisProvider{client: rdb})
 	if err != nil {
 		t.Fatalf("NewData: %v", err)
 	}
 
-	repo := NewLoginRepo(d).(*loginRepo)
+	repo := NewLoginRepo(d, nil).(*loginRepo)
 
 	// Phase 1: read user from MySQL.
 	user, err := repo.FindUserByAccount(ctx, testAccount)
@@ -216,12 +239,12 @@ func TestCrossPlugin_UpdateUserLastLoginTime(t *testing.T) {
 	t.Cleanup(func() { entClient.User.DeleteOneID(created.ID).Exec(ctx) }) //nolint:errcheck
 
 	provider := &staticDBProvider{db: db, dialect: "mysql"}
-	d, err := NewData(NewEntClientProviderFromDB(provider), rdb)
+	d, err := NewData(NewEntClientProviderFromDB(provider), staticRedisProvider{client: rdb})
 	if err != nil {
 		t.Fatalf("NewData: %v", err)
 	}
 
-	repo := NewLoginRepo(d).(*loginRepo)
+	repo := NewLoginRepo(d, nil).(*loginRepo)
 	user, err := repo.FindUserByAccount(ctx, testAccount)
 	if err != nil {
 		t.Fatalf("FindUserByAccount: %v", err)
@@ -269,11 +292,11 @@ func TestCrossPlugin_ConcurrentMySQLAndRedisOperations(t *testing.T) {
 	})
 
 	provider := &staticDBProvider{db: db, dialect: "mysql"}
-	d, err := NewData(NewEntClientProviderFromDB(provider), rdb)
+	d, err := NewData(NewEntClientProviderFromDB(provider), staticRedisProvider{client: rdb})
 	if err != nil {
 		t.Fatalf("NewData: %v", err)
 	}
-	repo := NewLoginRepo(d).(*loginRepo)
+	repo := NewLoginRepo(d, nil).(*loginRepo)
 
 	var wg sync.WaitGroup
 	errs := make([]error, workers)
@@ -339,14 +362,14 @@ func TestCrossPlugin_RedisUnavailableDoesNotBlockMySQLInit(t *testing.T) {
 	}
 	t.Cleanup(func() { entClient.User.DeleteOneID(created.ID).Exec(ctx) }) //nolint:errcheck
 
-	// Pass nil Redis client — NewData must not panic or fail.
+	// Pass nil Redis provider facade — NewData must not panic or fail.
 	provider := &staticDBProvider{db: db, dialect: "mysql"}
 	d, err := NewData(NewEntClientProviderFromDB(provider), nil)
 	if err != nil {
 		t.Fatalf("NewData with nil Redis: %v", err)
 	}
 
-	repo := NewLoginRepo(d).(*loginRepo)
+	repo := NewLoginRepo(d, nil).(*loginRepo)
 	user, err := repo.FindUserByAccount(ctx, testAccount)
 	if err != nil {
 		t.Fatalf("FindUserByAccount without Redis: %v", err)

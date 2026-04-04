@@ -6,35 +6,24 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-lynx/lynx-layout/internal/data/ent"
-	lynxMysql "github.com/go-lynx/lynx-mysql"
-	lynxRedis "github.com/go-lynx/lynx-redis"
+	lynxredis "github.com/go-lynx/lynx-redis"
 	"github.com/go-lynx/lynx-sql-sdk/interfaces"
-	_ "github.com/go-lynx/lynx-tracer"
 	"github.com/go-lynx/lynx/log"
 	"github.com/google/wire"
-	"github.com/redis/go-redis/v9"
 )
 
 // ProviderSet is a Google Wire provider set used to define dependency injection rules.
-// It includes NewData, NewLoginRepo functions, and functions to get drivers and clients from database and Redis plugins.
+// It includes NewData, NewLoginRepo functions, and functions to get drivers and providers from database and Redis plugins.
 var ProviderSet = wire.NewSet(
 	NewData,
 	NewLoginRepo,
-	NewEntClientProvider,
-	lynxRedis.GetRedis,
+	NewLoginAuthTokenIssuer,
 )
 
 type EntClientProvider func() (*ent.Client, error)
 
 type Data struct {
-	db  EntClientProvider
-	rdb *redis.Client // Redis operation client
-}
-
-// NewEntClientProvider returns a provider that always builds an ent client from the current database pool.
-// Do not close the returned client in request-scoped code; the underlying pool is owned by the plugin.
-func NewEntClientProvider() EntClientProvider {
-	return NewEntClientProviderFromDB(lynxMysql.GetProvider())
+	db EntClientProvider
 }
 
 // NewEntClientProviderFromDB creates an ent client provider from a stable SQL DB provider.
@@ -67,7 +56,13 @@ func NewEntDriverProvider(provider interfaces.DBProvider) func(ctx context.Conte
 }
 
 // NewData creates a new Data instance.
-func NewData(dbProvider EntClientProvider, rdb *redis.Client) (*Data, error) {
+// The Redis provider is kept in the constructor only to preserve the current Wire contract owned by cmd/user.
+// internal/data itself does not retain or call the provider at runtime.
+func NewData(dbProvider EntClientProvider, _ lynxredis.Provider) (*Data, error) {
+	if dbProvider == nil {
+		return nil, fmt.Errorf("ent client provider is nil")
+	}
+
 	client, err := dbProvider()
 	if err != nil {
 		return nil, err
@@ -80,8 +75,9 @@ func NewData(dbProvider EntClientProvider, rdb *redis.Client) (*Data, error) {
 
 	// Initialize Data instance
 	d := &Data{
-		db:  dbProvider,
-		rdb: rdb,
+		// Keep only the stable DB provider. Redis wiring is validated by bootstrap, but we do not
+		// retain a replaceable redis handle or provider in the data layer singleton.
+		db: dbProvider,
 	}
 	return d, nil
 }

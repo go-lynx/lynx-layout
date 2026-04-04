@@ -1,5 +1,6 @@
 //go:build wireinject
 // +build wireinject
+
 //go:generate go run -mod=mod github.com/google/wire/cmd/wire
 
 // The build tag makes sure the stub is not built in the final build.
@@ -8,7 +9,6 @@ package main
 
 import (
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-lynx/lynx"
 	lynxkratos "github.com/go-lynx/lynx/kratos"
 
 	"github.com/go-lynx/lynx-layout/internal/biz"
@@ -22,11 +22,11 @@ import (
 func wireApp() (*kratos.App, error) {
 	panic(
 		wire.Build(
+			bootstrapProviderSet,
 			server.ProviderSet,
 			data.ProviderSet,
 			biz.ProviderSet,
 			service.ProviderSet,
-			lynx.Lynx,
 			lynxkratos.ProvideKratosOptions,
 			lynxkratos.NewKratos,
 		),
