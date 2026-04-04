@@ -1,19 +1,23 @@
 version: "3.9"
 
 services:
-  postgres:
-    image: postgres:16-alpine
-    container_name: lynx-layout-postgres
+  mysql:
+    image: mysql:8.4
+    container_name: lynx-layout-mysql
     restart: unless-stopped
     environment:
-      POSTGRES_DB: lynx
-      POSTGRES_USER: lynx
-      POSTGRES_PASSWORD: lynx
-      PGDATA: /var/lib/postgresql/data/pgdata
+      MYSQL_DATABASE: lynx_test
+      MYSQL_USER: lynx
+      MYSQL_PASSWORD: lynx123456
+      MYSQL_ROOT_PASSWORD: root
     ports:
-      - "5432:5432"
+      - "3306:3306"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-authentication-plugin=mysql_native_password
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - mysql-data:/var/lib/mysql
 
   redis:
     image: redis:7-alpine
@@ -26,5 +30,5 @@ services:
       - redis-data:/data
 
 volumes:
-  postgres-data:
+  mysql-data:
   redis-data:
