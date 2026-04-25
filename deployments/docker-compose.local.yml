@@ -8,8 +8,8 @@ services:
     environment:
       MYSQL_DATABASE: lynx_test
       MYSQL_USER: lynx
-      MYSQL_PASSWORD: lynx123456
-      MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: ${LYNX_LAYOUT_MYSQL_PASSWORD:-lynx-local-password}
+      MYSQL_ROOT_PASSWORD: ${LYNX_LAYOUT_MYSQL_ROOT_PASSWORD:-lynx-local-root-password}
     ports:
       - "3306:3306"
     command:
