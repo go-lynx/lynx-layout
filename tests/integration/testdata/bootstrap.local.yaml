@@ -10,7 +10,7 @@ lynx:
 
   mysql:
     driver: mysql
-    source: "lynx:lynx123456@tcp(127.0.0.1:3306)/lynx_test?charset=utf8mb4&parseTime=True&loc=Local"
+    source: "lynx:lynx-local-password@tcp(127.0.0.1:3306)/lynx_test?charset=utf8mb4&parseTime=True&loc=Local"
     # Use smaller pool sizes than the real local bootstrap config to keep test
     # fixture defaults lightweight while preserving the same DSN shape.
     min_conn: 1

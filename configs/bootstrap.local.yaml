@@ -26,9 +26,10 @@ lynx:
       addr: 127.0.0.1:9000
       timeout: 5s
 
+  # Local Docker Compose defaults only. Override this file for shared environments.
   mysql:
     driver: mysql
-    source: "lynx:lynx123456@tcp(127.0.0.1:3306)/lynx_test?charset=utf8mb4&parseTime=True&loc=Local"
+    source: "lynx:lynx-local-password@tcp(127.0.0.1:3306)/lynx_test?charset=utf8mb4&parseTime=True&loc=Local"
     min_conn: 10
     max_conn: 10
 
