@@ -7,15 +7,15 @@ toolchain go1.26.2
 require (
 	entgo.io/ent v0.14.6
 	github.com/go-kratos/kratos/v2 v2.9.2
-	github.com/go-lynx/lynx v1.6.0-beta
-	github.com/go-lynx/lynx-grpc v0.0.0-00010101000000-000000000000
-	github.com/go-lynx/lynx-http v0.0.0-00010101000000-000000000000
-	github.com/go-lynx/lynx-layout/api v0.0.0-20231226093010-b62a1b27588b
-	github.com/go-lynx/lynx-mysql v0.0.0-00010101000000-000000000000
-	github.com/go-lynx/lynx-redis v1.6.0-beta
-	github.com/go-lynx/lynx-redis-lock v0.0.0-00010101000000-000000000000
-	github.com/go-lynx/lynx-sql-sdk v1.6.0-beta
-	github.com/go-lynx/lynx-tracer v0.0.0-00010101000000-000000000000
+	github.com/go-lynx/lynx v1.6.1
+	github.com/go-lynx/lynx-grpc v1.6.1
+	github.com/go-lynx/lynx-http v1.6.1
+	github.com/go-lynx/lynx-layout/api v1.6.1
+	github.com/go-lynx/lynx-mysql v1.6.1
+	github.com/go-lynx/lynx-redis v1.6.1
+	github.com/go-lynx/lynx-redis-lock v1.6.1
+	github.com/go-lynx/lynx-sql-sdk v1.6.1
+	github.com/go-lynx/lynx-tracer v1.6.1
 	github.com/google/wire v0.7.0
 	github.com/redis/go-redis/v9 v9.12.1
 	github.com/stretchr/testify v1.11.1
@@ -96,21 +96,3 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260401024825-9d38bb4040a9 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 )
-
-replace github.com/go-lynx/lynx-layout/api => ./api
-
-replace github.com/go-lynx/lynx => ../lynx
-
-replace github.com/go-lynx/lynx-grpc => ../lynx-grpc
-
-replace github.com/go-lynx/lynx-http => ../lynx-http
-
-replace github.com/go-lynx/lynx-mysql => ../lynx-mysql
-
-replace github.com/go-lynx/lynx-redis => ../lynx-redis
-
-replace github.com/go-lynx/lynx-redis-lock => ../lynx-redis-lock
-
-replace github.com/go-lynx/lynx-sql-sdk => ../lynx-sql-sdk
-
-replace github.com/go-lynx/lynx-tracer => ../lynx-tracer
