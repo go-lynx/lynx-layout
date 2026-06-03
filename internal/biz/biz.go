@@ -1,3 +1,5 @@
+// Package biz contains the business-logic (use-case) layer of the user service.
+// It defines domain interfaces and orchestrates data access via the LoginRepo interface.
 package biz
 
 import (

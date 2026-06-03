@@ -37,13 +37,13 @@ func TestNewGRPCServerRegistersService(t *testing.T) {
 }
 
 func TestNewGRPCServerRejectsNilBaseServer(t *testing.T) {
-	if _, err := NewGRPCServer(GRPCServerBase{}, service.NewLoginService(nil, nil)); err == nil || !strings.Contains(err.Error(), "gRPC 服务实例为空") {
+	if _, err := NewGRPCServer(GRPCServerBase{}, service.NewLoginService(nil, nil)); err == nil || !strings.Contains(err.Error(), "gRPC server instance is nil") {
 		t.Fatalf("expected nil base server error, got %v", err)
 	}
 }
 
 func TestNewHTTPServerRejectsNilBaseServer(t *testing.T) {
-	if _, err := NewHTTPServer(HTTPServerBase{}, service.NewLoginService(nil, nil)); err == nil || !strings.Contains(err.Error(), "HTTP 服务实例为空") {
+	if _, err := NewHTTPServer(HTTPServerBase{}, service.NewLoginService(nil, nil)); err == nil || !strings.Contains(err.Error(), "HTTP server instance is nil") {
 		t.Fatalf("expected nil base server error, got %v", err)
 	}
 }

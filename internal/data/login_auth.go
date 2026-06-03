@@ -46,7 +46,7 @@ func issueLoginAuthToken(ctx context.Context, user *bo.UserBO, runtimeConfig con
 		return "", err
 	}
 	if grpcClientConnectionGetter == nil {
-		return "", fmt.Errorf("登录鉴权 gRPC 连接提供器不能为空")
+		return "", fmt.Errorf("login auth gRPC connection getter must not be nil")
 	}
 
 	authConfig, err := loadLoginAuthConfig(runtimeConfig)
@@ -61,10 +61,10 @@ func issueLoginAuthToken(ctx context.Context, user *bo.UserBO, runtimeConfig con
 
 	conn, err := grpcClientConnectionGetter(authConfig.ServiceName)
 	if err != nil {
-		return "", fmt.Errorf("获取登录鉴权 gRPC 连接失败: %w", err)
+		return "", fmt.Errorf("failed to get login auth gRPC connection: %w", err)
 	}
 	if conn == nil {
-		return "", fmt.Errorf("登录鉴权 gRPC 连接为空: service=%s", authConfig.ServiceName)
+		return "", fmt.Errorf("login auth gRPC connection is nil: service=%s", authConfig.ServiceName)
 	}
 
 	req, err := buildLoginAuthRequest(user)
@@ -73,10 +73,10 @@ func issueLoginAuthToken(ctx context.Context, user *bo.UserBO, runtimeConfig con
 	}
 
 	resp := &structpb.Struct{}
-	// 当前模板还没有沉淀统一的鉴权 proto，这里先用 Struct 打通标准 gRPC 调用链。
-	// 接入真实鉴权服务后，只需要把 method 配置和请求/响应消息体替换为正式 proto 类型。
+	// The template uses a generic Struct payload until a dedicated auth proto is available.
+	// Replace the method config and request/response types with the real proto once adopted.
 	if err := conn.Invoke(callCtx, authConfig.Method, req, resp); err != nil {
-		return "", fmt.Errorf("调用登录鉴权 gRPC 方法失败: %w", err)
+		return "", fmt.Errorf("failed to invoke login auth gRPC method: %w", err)
 	}
 
 	token, err := extractLoginAuthToken(resp)
@@ -88,16 +88,16 @@ func issueLoginAuthToken(ctx context.Context, user *bo.UserBO, runtimeConfig con
 
 func validateLoginAuthInput(ctx context.Context, user *bo.UserBO) error {
 	if ctx == nil {
-		return fmt.Errorf("登录鉴权上下文不能为空")
+		return fmt.Errorf("login auth context must not be nil")
 	}
 	if user == nil {
-		return fmt.Errorf("登录鉴权用户信息不能为空")
+		return fmt.Errorf("login auth user must not be nil")
 	}
 	if user.Id <= 0 {
-		return fmt.Errorf("登录鉴权用户ID非法: %d", user.Id)
+		return fmt.Errorf("login auth user ID is invalid: %d", user.Id)
 	}
 	if strings.TrimSpace(user.Account) == "" {
-		return fmt.Errorf("登录鉴权账号不能为空")
+		return fmt.Errorf("login auth account must not be empty")
 	}
 	return nil
 }
@@ -132,19 +132,19 @@ func resolveLoginAuthConfig(runtimeConfig config.Config, lookupEnv func(string) 
 	if envTimeout := readLoginAuthEnv(lookupEnv, loginAuthTimeoutEnvKey); envTimeout != "" {
 		timeout, err := time.ParseDuration(envTimeout)
 		if err != nil {
-			return loginAuthConfig{}, fmt.Errorf("解析环境变量 %s 失败: %w", loginAuthTimeoutEnvKey, err)
+			return loginAuthConfig{}, fmt.Errorf("failed to parse env var %s: %w", loginAuthTimeoutEnvKey, err)
 		}
 		authConfig.Timeout = timeout
 	}
 
 	if authConfig.ServiceName == "" {
-		return loginAuthConfig{}, fmt.Errorf("未配置登录鉴权 gRPC 服务名，请设置 %s 或 %s", loginAuthServiceConfigKey, loginAuthServiceEnvKey)
+		return loginAuthConfig{}, fmt.Errorf("login auth gRPC service name not configured; set %s or %s", loginAuthServiceConfigKey, loginAuthServiceEnvKey)
 	}
 	if err := validateLoginAuthMethod(authConfig.Method); err != nil {
 		return loginAuthConfig{}, err
 	}
 	if authConfig.Timeout <= 0 {
-		return loginAuthConfig{}, fmt.Errorf("登录鉴权超时时间必须大于 0: %s", authConfig.Timeout)
+		return loginAuthConfig{}, fmt.Errorf("login auth timeout must be greater than 0: %s", authConfig.Timeout)
 	}
 	return authConfig, nil
 }
@@ -171,7 +171,7 @@ func readLoginAuthDurationConfig(runtimeConfig config.Config, key string) (time.
 	}
 	timeout, err := time.ParseDuration(rawValue)
 	if err != nil {
-		return 0, false, fmt.Errorf("解析配置 %s 失败: %w", key, err)
+		return 0, false, fmt.Errorf("failed to parse config %s: %w", key, err)
 	}
 	return timeout, true, nil
 }
@@ -185,13 +185,13 @@ func readLoginAuthEnv(lookupEnv func(string) string, key string) string {
 
 func validateLoginAuthMethod(method string) error {
 	if method == "" {
-		return fmt.Errorf("未配置登录鉴权 gRPC 方法，请设置 %s 或 %s", loginAuthMethodConfigKey, loginAuthMethodEnvKey)
+		return fmt.Errorf("login auth gRPC method not configured; set %s or %s", loginAuthMethodConfigKey, loginAuthMethodEnvKey)
 	}
 	if !strings.HasPrefix(method, "/") {
-		return fmt.Errorf("登录鉴权 gRPC 方法格式非法，必须以 / 开头: %s", method)
+		return fmt.Errorf("login auth gRPC method must start with /: %s", method)
 	}
 	if strings.Count(method, "/") != 2 {
-		return fmt.Errorf("登录鉴权 gRPC 方法格式非法，必须是 /package.Service/Method: %s", method)
+		return fmt.Errorf("login auth gRPC method must be in the form /package.Service/Method: %s", method)
 	}
 	return nil
 }
@@ -213,28 +213,28 @@ func buildLoginAuthRequest(user *bo.UserBO) (*structpb.Struct, error) {
 		"stats":    user.Stats,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("构建登录鉴权请求失败: %w", err)
+		return nil, fmt.Errorf("failed to build login auth request: %w", err)
 	}
 	return payload, nil
 }
 
 func extractLoginAuthToken(resp *structpb.Struct) (string, error) {
 	if resp == nil {
-		return "", fmt.Errorf("登录鉴权响应不能为空")
+		return "", fmt.Errorf("login auth response must not be nil")
 	}
 
 	tokenValue, ok := resp.AsMap()["token"]
 	if !ok {
-		return "", fmt.Errorf("登录鉴权响应缺少 token 字段")
+		return "", fmt.Errorf("login auth response missing token field")
 	}
 
 	token, ok := tokenValue.(string)
 	if !ok {
-		return "", fmt.Errorf("登录鉴权响应 token 字段类型非法: %T", tokenValue)
+		return "", fmt.Errorf("login auth response token field has unexpected type: %T", tokenValue)
 	}
 	token = strings.TrimSpace(token)
 	if token == "" {
-		return "", fmt.Errorf("登录鉴权响应 token 不能为空")
+		return "", fmt.Errorf("login auth response token must not be empty")
 	}
 	return token, nil
 }

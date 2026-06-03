@@ -1,3 +1,6 @@
+// Package service implements the application-service layer of the user service.
+// It translates gRPC/HTTP requests into calls to the business-logic layer and
+// handles cross-cutting concerns such as distributed login locking.
 package service
 
 import (

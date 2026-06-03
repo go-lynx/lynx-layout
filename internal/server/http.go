@@ -20,16 +20,16 @@ func NewHTTPServer(
 	base HTTPServerBase,
 	login *service.LoginService) (h *transporthttp.Server, err error) {
 	if login == nil {
-		return nil, fmt.Errorf("login HTTP 服务不能为空")
+		return nil, fmt.Errorf("login HTTP service must not be nil")
 	}
 	if base.Server == nil {
-		return nil, fmt.Errorf("HTTP 服务实例为空")
+		return nil, fmt.Errorf("HTTP server instance is nil")
 	}
 
 	defer func() {
 		if recovered := recover(); recovered != nil {
 			h = nil
-			err = fmt.Errorf("初始化 HTTP 服务失败: %v", recovered)
+			err = fmt.Errorf("failed to initialize HTTP service: %v", recovered)
 		}
 	}()
 

@@ -23,16 +23,16 @@ func NewGRPCServer(
 	base GRPCServerBase,
 	login *service.LoginService) (g *transportgrpc.Server, err error) {
 	if login == nil {
-		return nil, fmt.Errorf("login gRPC 服务不能为空")
+		return nil, fmt.Errorf("login gRPC service must not be nil")
 	}
 	if base.Server == nil {
-		return nil, fmt.Errorf("gRPC 服务实例为空")
+		return nil, fmt.Errorf("gRPC server instance is nil")
 	}
 
 	defer func() {
 		if recovered := recover(); recovered != nil {
 			g = nil
-			err = fmt.Errorf("初始化 gRPC 服务失败: %v", recovered)
+			err = fmt.Errorf("failed to initialize gRPC service: %v", recovered)
 		}
 	}()
 

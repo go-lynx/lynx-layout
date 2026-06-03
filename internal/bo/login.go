@@ -1,3 +1,5 @@
+// Package bo defines the business objects (BOs) used to transfer domain data
+// between the data-access layer and the business-logic layer.
 package bo
 
 // UserBO represents the business object for a user.

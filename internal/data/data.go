@@ -1,3 +1,6 @@
+// Package data provides the data-access layer of the user service.
+// It wires together the ent ORM client (backed by MySQL via lynx-mysql) and
+// exposes repository implementations consumed by the business-logic layer.
 package data
 
 import (
