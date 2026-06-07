@@ -7,7 +7,7 @@ toolchain go1.26.2
 require (
 	entgo.io/ent v0.14.6
 	github.com/go-kratos/kratos/v2 v2.9.2
-	github.com/go-lynx/lynx v1.6.2
+	github.com/go-lynx/lynx v1.6.3
 	github.com/go-lynx/lynx-grpc v1.6.2
 	github.com/go-lynx/lynx-http v1.6.2
 	github.com/go-lynx/lynx-layout/api v1.6.2
