@@ -7,15 +7,15 @@ toolchain go1.26.2
 require (
 	entgo.io/ent v0.14.6
 	github.com/go-kratos/kratos/v2 v2.9.2
-	github.com/go-lynx/lynx v1.6.1
-	github.com/go-lynx/lynx-grpc v1.6.1
-	github.com/go-lynx/lynx-http v1.6.1
-	github.com/go-lynx/lynx-layout/api v1.6.1
-	github.com/go-lynx/lynx-mysql v1.6.1
-	github.com/go-lynx/lynx-redis v1.6.1
-	github.com/go-lynx/lynx-redis-lock v1.6.1
-	github.com/go-lynx/lynx-sql-sdk v1.6.1
-	github.com/go-lynx/lynx-tracer v1.6.1
+	github.com/go-lynx/lynx v1.6.2
+	github.com/go-lynx/lynx-grpc v1.6.2
+	github.com/go-lynx/lynx-http v1.6.2
+	github.com/go-lynx/lynx-layout/api v1.6.2
+	github.com/go-lynx/lynx-mysql v1.6.2
+	github.com/go-lynx/lynx-redis v1.6.2
+	github.com/go-lynx/lynx-redis-lock v1.6.2
+	github.com/go-lynx/lynx-sql-sdk v1.6.2
+	github.com/go-lynx/lynx-tracer v1.6.2
 	github.com/google/wire v0.7.0
 	github.com/redis/go-redis/v9 v9.12.1
 	github.com/stretchr/testify v1.11.1
