@@ -52,7 +52,10 @@ func TestLocalBootstrapMatchesComposeAndFixture(t *testing.T) {
 	if strings.TrimSpace(fixture.Lynx.Redis.Password) != "" {
 		t.Fatalf("integration fixture redis password must mirror bootstrap.local.yaml for the default local compose path")
 	}
-	if strings.Join(bootstrap.Lynx.Redis.Addrs, ",") != strings.Join(fixture.Lynx.Redis.Addrs, ",") {
+	// The default local bootstrap ships with the redis section commented out (zero
+	// external dependencies); the addrs contract only applies when it is enabled.
+	if len(bootstrap.Lynx.Redis.Addrs) > 0 &&
+		strings.Join(bootstrap.Lynx.Redis.Addrs, ",") != strings.Join(fixture.Lynx.Redis.Addrs, ",") {
 		t.Fatalf("integration fixture redis addrs must mirror bootstrap.local.yaml")
 	}
 	if composeRedisRequiresPassword(compose.Services.Redis.Command) {

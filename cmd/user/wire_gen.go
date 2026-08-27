@@ -36,12 +36,12 @@ func wireApp() (*kratos.App, error) {
 	if err != nil {
 		return nil, err
 	}
-	dbProvider, err := provideDBProvider()
+	dbProvider, err := provideDBProvider(lynxApp)
 	if err != nil {
 		return nil, err
 	}
 	entClientProvider := provideEntClientProvider(dbProvider)
-	provider, err := provideRedisProvider()
+	provider, err := provideRedisProvider(lynxApp)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func wireApp() (*kratos.App, error) {
 	loginAuthTokenIssuer := data.NewLoginAuthTokenIssuer(config, grpcClientConnectionGetter)
 	loginRepo := data.NewLoginRepo(dataData, loginAuthTokenIssuer)
 	loginUseCase := biz.NewLoginUseCase(loginRepo)
-	lockRunner := provideLoginLockRunner()
+	lockRunner := provideLoginLockRunner(lynxApp)
 	loginService := service.NewLoginService(loginUseCase, lockRunner)
 	grpcServer, err := server.NewGRPCServer(grpcServerBase, loginService)
 	if err != nil {

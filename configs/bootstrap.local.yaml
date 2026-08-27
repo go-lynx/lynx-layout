@@ -1,6 +1,6 @@
 # Local-only bootstrap configuration that avoids Polaris and other control-plane registries.
 # Runtime plugins are declared in cmd/user/plugins.go and assembled in cmd/user/providers.go.
-# The default docker-compose local path expects passwordless Redis at 127.0.0.1:6379.
+# The default docker-compose local path expects passwordless Redis at 127.0.0.1:6379 (only when redis is enabled).
 lynx:
   application:
     name: user-service
@@ -26,24 +26,32 @@ lynx:
       addr: 127.0.0.1:9000
       timeout: 5s
 
+  # MySQL / Redis are disabled by default so a freshly generated project starts with
+  # NO external dependencies: internal/data falls back to an in-memory user/token store.
+  # To use the ent/MySQL + Redis example code, start the services
+  # (docker compose -f deployments/docker-compose.local.yml up -d) and uncomment the sections below.
   # Local Docker Compose defaults only. Override this file for shared environments.
-  mysql:
-    driver: mysql
-    source: "lynx:lynx-local-password@tcp(127.0.0.1:3306)/lynx_test?charset=utf8mb4&parseTime=True&loc=Local"
-    min_conn: 10
-    max_conn: 10
+  # NOTE: the sections are commented out (not just `enabled: false`) so that older core
+  # releases, which load any plugin whose config prefix is present, also skip them.
+  # mysql:
+  #   enabled: false
+  #   driver: mysql
+  #   source: "lynx:lynx-local-password@tcp(127.0.0.1:3306)/lynx_test?charset=utf8mb4&parseTime=True&loc=Local"
+  #   min_conn: 10
+  #   max_conn: 10
 
-  redis:
-    network: tcp
-    addrs:
-      - 127.0.0.1:6379
-    password: ""
-    db: 0
-    min_idle_conns: 5
-    max_active_conns: 20
-    dial_timeout: 2s
-    read_timeout: 2s
-    write_timeout: 2s
+  # redis:
+  #   enabled: false
+  #   network: tcp
+  #   addrs:
+  #     - 127.0.0.1:6379
+  #   password: ""
+  #   db: 0
+  #   min_idle_conns: 5
+  #   max_active_conns: 20
+  #   dial_timeout: 2s
+  #   read_timeout: 2s
+  #   write_timeout: 2s
 
   # Optional external auth service used by internal/data/login_auth.go.
   # layout:

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/go-lynx/lynx"
@@ -144,16 +145,55 @@ func TestProvideRuntimeConfig_UsesAppOwnedConfig(t *testing.T) {
 	}
 }
 
-func TestProvideRedisProvider_RejectsMissingProvider(t *testing.T) {
-	lynx.ClearDefaultApp()
-	t.Cleanup(lynx.ClearDefaultApp)
-
-	provider, err := provideRedisProvider()
+func TestProvideRedisProvider_RejectsNilApp(t *testing.T) {
+	provider, err := provideRedisProvider(nil)
 	if err == nil {
-		t.Fatal("expected redis provider lookup to fail when no app is published")
+		t.Fatal("expected redis provider lookup to fail when app is nil")
 	}
 	if provider != nil {
 		t.Fatal("expected redis provider to remain nil when lookup fails")
+	}
+}
+
+func TestProviders_FallBackWhenStoragePluginsAreNotLoaded(t *testing.T) {
+	cfg := newLayoutTestConfig(t, "layout-no-storage")
+	app, err := lynx.NewStandaloneApp(cfg)
+	if err != nil {
+		t.Fatalf("failed to create standalone app: %v", err)
+	}
+	t.Cleanup(func() {
+		_ = app.Close()
+	})
+
+	dbProvider, err := provideDBProvider(app)
+	if err != nil {
+		t.Fatalf("expected missing mysql plugin to be tolerated: %v", err)
+	}
+	if dbProvider != nil {
+		t.Fatal("expected nil db provider when mysql plugin is not loaded")
+	}
+	if entProvider := provideEntClientProvider(dbProvider); entProvider != nil {
+		t.Fatal("expected nil ent client provider when db provider is nil")
+	}
+
+	redisProvider, err := provideRedisProvider(app)
+	if err != nil {
+		t.Fatalf("expected missing redis plugin to be tolerated: %v", err)
+	}
+	if redisProvider != nil {
+		t.Fatal("expected nil redis provider when redis plugin is not loaded")
+	}
+
+	calls := 0
+	runner := provideLoginLockRunner(app)
+	if err := runner(context.Background(), "login:test", time.Second, func() error {
+		calls++
+		return nil
+	}); err != nil {
+		t.Fatalf("expected local lock runner to execute fn: %v", err)
+	}
+	if calls != 1 {
+		t.Fatalf("expected fn to run once, ran %d times", calls)
 	}
 }
 

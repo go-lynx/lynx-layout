@@ -33,7 +33,7 @@ func TestFlowGRPCRouting(t *testing.T) {
 		Account:  "flow-routing-account",
 		Password: "flow-routing-password",
 	}
-	
+
 	reply, err := harness.Client.Login(ctx, req)
 	require.NoError(t, err, "gRPC Login request should succeed through the routing harness")
 
@@ -41,7 +41,7 @@ func TestFlowGRPCRouting(t *testing.T) {
 	// This confirms the request reached the intended service and routing is active.
 	assert.NotNil(t, reply, "Login reply should not be nil")
 	assert.Equal(t, req.Account, reply.User.Account, "Mock service should return the requested account")
-	
+
 	harness.Service.RequireCallCount(t, 1)
 	harness.Service.RequireLastLoginRequest(t, req)
 }

@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build / Vet / Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - name: Verify module is consumable without local replace directives
+        run: |
+          if grep -Eq "^replace[[:space:]]+github.com/go-lynx/" go.mod; then
+            echo "::error::go.mod contains a replace to a go-lynx module; consumers cannot build this. Use go.work locally instead."
+            exit 1
+          fi
+      - run: go mod download
+      - run: go build ./...
+      - run: go vet ./...
+      - run: go test -race -count=1 ./...

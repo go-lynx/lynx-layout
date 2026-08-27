@@ -80,6 +80,27 @@ This code initializes and runs the application with essential components like HT
 
 We hope this guide helps you navigate our Microservice Template Project. Happy coding! 🎉
 
+## 零依赖快速启动（默认内存存储）
+
+`configs/bootstrap.local.yaml` 默认把 `lynx.mysql.enabled` 与 `lynx.redis.enabled` 设为 `false`，因此通过 `lynx new` 生成的项目**不需要任何 MySQL / Redis** 就能直接启动并提供 HTTP（`127.0.0.1:8000`）与 gRPC（`127.0.0.1:9000`）：
+
+```bash
+go run ./cmd/user -conf ./configs/bootstrap.local.yaml
+```
+
+此时 `internal/data` 会在日志中打印 `data layer is running with in-memory storage`，并使用一个带互斥锁的内存用户表 / token 表（内置演示账号 `admin` / `admin123`，登录 token 在本地随机生成），登录用的分布式锁也会退化为进程内互斥锁。
+
+要切换到 ent/MySQL + Redis 的示例实现，先启动依赖，再把两个 `enabled` 改成 `true`（或直接删除该键）：
+
+```bash
+docker compose -f deployments/docker-compose.local.yml up -d
+# configs/bootstrap.local.yaml
+#   lynx.mysql.enabled: true
+#   lynx.redis.enabled: true
+```
+
+`cmd/user/providers.go` 会在运行期检查 `mysql.client` / `redis.client` 插件是否已被插件管理器加载，未加载时返回空 provider，由 `data.NewData` 选择内存实现；ent / MySQL / Redis 代码路径全部保留。
+
 ## 本地开发（无需 Polaris）
 
 如果只想在本地调试服务且不依赖 Polaris，可按照下面的步骤操作：
@@ -94,7 +115,8 @@ We hope this guide helps you navigate our Microservice Template Project. Happy c
    make init
    ```
    `make init` 会安装 `lynx`、`protoc-gen-go`、`protoc-gen-go-grpc` 和 `protoc-gen-openapi`。如果只直接执行 `go run`，且本地已经有可用的生成物，可以跳过这一步。
-3. **启动本地依赖（MySQL & Redis）**
+3. **（可选）启动本地依赖（MySQL & Redis）**
+   默认配置不需要这一步（见上文“零依赖快速启动”）。只有在把 `lynx.mysql.enabled` / `lynx.redis.enabled` 改成 `true` 时才需要：
    ```bash
    docker compose -f deployments/docker-compose.local.yml up -d
    ```

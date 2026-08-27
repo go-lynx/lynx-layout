@@ -22,6 +22,9 @@ type loginRepo struct {
 // Parameter data is the data access instance, logger is the logger.
 // Returns a pointer that implements the biz.LoginRepo interface.
 func NewLoginRepo(data *Data, loginAuth LoginAuthTokenIssuer) biz.LoginRepo {
+	if data.InMemory() {
+		return newMemoryLoginRepo(data.memory)
+	}
 	return &loginRepo{
 		data:      data,
 		loginAuth: loginAuth,

@@ -26,7 +26,13 @@ var ProviderSet = wire.NewSet(
 type EntClientProvider func() (*ent.Client, error)
 
 type Data struct {
-	db EntClientProvider
+	db     EntClientProvider
+	memory *memoryStore // non-nil when running without the mysql client plugin
+}
+
+// InMemory reports whether the data layer is backed by the in-memory store instead of ent/MySQL.
+func (d *Data) InMemory() bool {
+	return d != nil && d.memory != nil
 }
 
 // NewEntClientProviderFromDB creates an ent client provider from a stable SQL DB provider.
@@ -59,11 +65,22 @@ func NewEntDriverProvider(provider interfaces.DBProvider) func(ctx context.Conte
 }
 
 // NewData creates a new Data instance.
+// When dbProvider is nil (the mysql client plugin is not loaded, e.g. `lynx.mysql.enabled: false`
+// in bootstrap.local.yaml) the data layer falls back to a mutex-guarded in-memory user/token store
+// so a freshly generated project can start and serve HTTP/gRPC with no external dependencies.
 // The Redis provider is kept in the constructor only to preserve the current Wire contract owned by cmd/user.
-// internal/data itself does not retain or call the provider at runtime.
-func NewData(dbProvider EntClientProvider, _ lynxredis.Provider) (*Data, error) {
+// internal/data itself does not retain or call the provider at runtime; it may be nil as well.
+func NewData(dbProvider EntClientProvider, redisProvider lynxredis.Provider) (*Data, error) {
 	if dbProvider == nil {
-		return nil, fmt.Errorf("ent client provider is nil")
+		store, err := newSeededMemoryStore()
+		if err != nil {
+			return nil, err
+		}
+		log.Infof("mysql client plugin not loaded: data layer is running with in-memory storage (demo account %q)", memoryDemoAccount)
+		if redisProvider == nil {
+			log.Infof("redis client plugin not loaded: login tokens are kept in memory")
+		}
+		return &Data{memory: store}, nil
 	}
 
 	client, err := dbProvider()
@@ -86,5 +103,8 @@ func NewData(dbProvider EntClientProvider, _ lynxredis.Provider) (*Data, error) 
 }
 
 func (d *Data) entClient() (*ent.Client, error) {
+	if d == nil || d.db == nil {
+		return nil, fmt.Errorf("ent client provider is not configured (running in-memory?)")
+	}
 	return d.db()
 }
